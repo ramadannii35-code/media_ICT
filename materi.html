@@ -1,0 +1,662 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Materi – Daerahku Kebanggaanku</title>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;800;900&family=Baloo+2:wght@700;800&display=swap" rel="stylesheet"/>
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    :root{
+      --merah:#E63946;--biru-tua:#1D3557;--biru:#457B9D;
+      --kuning:#FFD60A;--hijau:#2DC653;--oranye:#FF9F1C;--ungu:#7B2D8B;
+      --bg:#f5f0e8;
+    }
+    body{
+      min-height:100vh;font-family:'Nunito',sans-serif;
+      background:var(--bg);color:var(--biru-tua);
+    }
+
+    /* ── Rainbow top bar ── */
+    .rainbow{position:fixed;top:0;left:0;right:0;height:6px;z-index:100;
+      background:repeating-linear-gradient(90deg,
+        #E63946 0 16.6%,#FFD60A 16.6% 33.2%,#2DC653 33.2% 49.8%,
+        #457B9D 49.8% 66.4%,#FF9F1C 66.4% 83%,#7B2D8B 83% 100%);}
+
+    /* ── Sticky nav ── */
+    .nav{
+      position:sticky;top:0;z-index:90;display:flex;align-items:center;
+      justify-content:space-between;padding:12px 24px;
+      background:rgba(245,240,232,.92);backdrop-filter:blur(10px);
+      border-bottom:2px solid rgba(29,53,87,.1);margin-top:6px;
+    }
+    .nav-left{display:flex;gap:8px;}
+    .nav-btn{
+      padding:7px 16px;border-radius:50px;font-size:.82rem;font-weight:800;
+      cursor:pointer;text-decoration:none;border:2px solid;transition:all .2s;
+    }
+    .btn-home{background:var(--biru-tua);color:#fff;border-color:var(--biru-tua);}
+    .btn-home:hover{opacity:.85;}
+    .btn-menu{background:transparent;color:var(--biru-tua);border-color:var(--biru-tua);}
+    .btn-menu:hover{background:var(--biru-tua);color:#fff;}
+    .nav-title{font-family:'Baloo 2',cursive;font-size:1rem;color:var(--biru-tua);font-weight:700;}
+
+    /* ── Progress reading ── */
+    .read-progress{
+      position:fixed;top:6px;left:0;height:4px;background:var(--kuning);
+      z-index:101;transition:width .1s;width:0%;
+    }
+
+    /* ── Hero banner ── */
+    .hero{
+      background:linear-gradient(135deg,var(--biru-tua) 0%,#457B9D 60%,#A8DADC 100%);
+      color:#fff;text-align:center;padding:60px 24px 50px;position:relative;overflow:hidden;
+    }
+    .hero::before{
+      content:'🗺️';font-size:200px;position:absolute;
+      top:-40px;right:-30px;opacity:.06;line-height:1;
+    }
+    .hero-badge{
+      display:inline-block;background:var(--kuning);color:var(--biru-tua);
+      font-weight:900;padding:6px 22px;border-radius:50px;font-size:.82rem;
+      text-transform:uppercase;letter-spacing:1px;margin-bottom:16px;
+    }
+    .hero h1{font-family:'Baloo 2',cursive;font-size:clamp(2rem,6vw,3.2rem);margin-bottom:10px;}
+    .hero h1 em{color:var(--kuning);font-style:normal;}
+    .hero p{color:rgba(255,255,255,.75);font-size:1rem;max-width:500px;margin:0 auto 20px;}
+    .hero-emojis{font-size:2rem;letter-spacing:8px;}
+
+    /* ── Table of contents ── */
+    .toc{
+      max-width:820px;margin:32px auto 0;padding:0 20px;
+    }
+    .toc-box{
+      background:#fff;border-radius:20px;padding:24px 28px;
+      box-shadow:0 4px 24px rgba(0,0,0,.08);border-left:5px solid var(--biru);
+    }
+    .toc-title{font-family:'Baloo 2',cursive;font-size:1.2rem;color:var(--biru-tua);margin-bottom:14px;display:flex;align-items:center;gap:8px;}
+    .toc-list{display:flex;flex-direction:column;gap:8px;}
+    .toc-item{
+      display:flex;align-items:center;gap:10px;
+      color:var(--biru);font-weight:700;font-size:.92rem;
+      text-decoration:none;padding:6px 10px;border-radius:8px;transition:background .2s;
+    }
+    .toc-item:hover{background:rgba(69,123,157,.1);}
+    .toc-num{
+      min-width:26px;height:26px;background:var(--biru);color:#fff;
+      border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.78rem;font-weight:900;
+    }
+
+    /* ── Main content ── */
+    .content{max-width:820px;margin:0 auto;padding:40px 20px 60px;}
+
+    /* Section */
+    .section{margin-bottom:52px;animation:fadeUp .6s ease both;}
+    @keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+
+    .sec-header{
+      display:flex;align-items:center;gap:14px;margin-bottom:22px;
+      padding-bottom:14px;border-bottom:3px dashed rgba(29,53,87,.15);
+    }
+    .sec-icon-wrap{
+      width:52px;height:52px;border-radius:14px;display:flex;align-items:center;
+      justify-content:center;font-size:28px;flex-shrink:0;
+    }
+    .ic-1{background:linear-gradient(135deg,#457B9D,#6ec6f5);}
+    .ic-2{background:linear-gradient(135deg,#E63946,#ff8c8c);}
+    .ic-3{background:linear-gradient(135deg,#2DC653,#80e8a0);}
+    .ic-4{background:linear-gradient(135deg,#FF9F1C,#ffd580);}
+    .ic-5{background:linear-gradient(135deg,#7B2D8B,#d084e0);}
+
+    .sec-title{font-family:'Baloo 2',cursive;font-size:1.45rem;color:var(--biru-tua);}
+    .sec-num{font-size:.8rem;color:#888;display:block;}
+
+    /* Content card */
+    .c-card{
+      background:#fff;border-radius:16px;padding:22px 24px;margin-bottom:16px;
+      box-shadow:0 3px 16px rgba(0,0,0,.07);transition:transform .2s,box-shadow .2s;
+    }
+    .c-card:hover{transform:translateY(-2px);box-shadow:0 8px 28px rgba(0,0,0,.12);}
+
+    .c-card p{font-size:.97rem;line-height:1.75;color:#444;}
+    .c-card p + p{margin-top:12px;}
+    .c-card strong{color:var(--biru-tua);}
+
+    /* Definition box */
+    .def-box{
+      background:linear-gradient(135deg,rgba(69,123,157,.08),rgba(168,218,220,.15));
+      border:2px solid rgba(69,123,157,.25);border-radius:14px;padding:20px 22px;margin-bottom:16px;
+    }
+    .def-title{font-weight:800;font-size:.8rem;text-transform:uppercase;color:var(--biru);letter-spacing:1px;margin-bottom:8px;}
+    .def-text{font-size:.97rem;line-height:1.7;color:#333;}
+
+    /* Ciri-ciri numbered list */
+    .ciri-list{
+      display:flex;flex-direction:column;gap:12px;margin-top:16px;
+    }
+    .ciri-item{
+      display:flex;gap:12px;align-items:flex-start;background:#fff;
+      border-radius:12px;padding:16px 18px;box-shadow:0 2px 12px rgba(0,0,0,.06);
+      transition:transform .2s,box-shadow .2s;
+    }
+    .ciri-item:hover{transform:translateX(4px);box-shadow:0 6px 20px rgba(0,0,0,.1);}
+    .ciri-num{
+      min-width:36px;height:36px;border-radius:50%;display:flex;align-items:center;
+      justify-content:center;font-weight:900;font-size:1rem;color:#fff;flex-shrink:0;
+      background:linear-gradient(135deg,var(--biru),#6ec6f5);
+    }
+    .ciri-content .ciri-title{font-weight:800;color:var(--biru-tua);margin-bottom:6px;font-size:.95rem;}
+    .ciri-content .ciri-desc{font-size:.88rem;color:#555;line-height:1.6;}
+
+    /* Grid cards */
+    .grid-2{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px;margin-bottom:16px;}
+    .grid-3{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:14px;margin-bottom:16px;}
+
+    .mini-card{
+      background:#fff;border-radius:14px;padding:18px 16px;text-align:center;
+      box-shadow:0 3px 14px rgba(0,0,0,.08);transition:transform .2s;border-top:4px solid;
+    }
+    .mini-card:hover{transform:translateY(-4px);}
+    .mc-1{border-color:var(--merah);}
+    .mc-2{border-color:var(--biru);}
+    .mc-3{border-color:var(--hijau);}
+    .mc-4{border-color:var(--oranye);}
+    .mc-5{border-color:var(--ungu);}
+    .mc-6{border-color:#e91e8c;}
+    .mini-card .mc-icon{font-size:36px;margin-bottom:8px;display:block;}
+    .mini-card .mc-label{font-weight:800;font-size:.88rem;color:var(--biru-tua);margin-bottom:4px;}
+    .mini-card .mc-sub{font-size:.75rem;color:#777;line-height:1.4;}
+
+    /* Step list */
+    .step-list{display:flex;flex-direction:column;gap:14px;}
+    .step{
+      display:flex;gap:14px;align-items:flex-start;background:#fff;
+      border-radius:14px;padding:18px 20px;box-shadow:0 3px 14px rgba(0,0,0,.07);
+      transition:transform .2s;
+    }
+    .step:hover{transform:translateX(6px);}
+    .step-num{
+      min-width:40px;height:40px;border-radius:50%;display:flex;align-items:center;
+      justify-content:center;font-weight:900;font-size:1.1rem;flex-shrink:0;color:#fff;
+    }
+    .sn-a{background:var(--biru);}
+    .sn-b{background:var(--merah);}
+    .sn-c{background:var(--hijau);}
+    .sn-d{background:var(--oranye);}
+    .sn-e{background:var(--ungu);}
+    .step-content .step-title{font-weight:800;color:var(--biru-tua);margin-bottom:4px;font-size:.97rem;}
+    .step-content .step-desc{font-size:.88rem;color:#555;line-height:1.6;}
+
+    /* Tip box */
+    .tip-box{
+      display:flex;gap:14px;align-items:flex-start;padding:18px 22px;
+      border-radius:14px;margin-bottom:14px;
+    }
+    .tip-yellow{background:rgba(255,214,10,.15);border:2px solid rgba(255,214,10,.4);}
+    .tip-green {background:rgba(45,198,83,.1);border:2px solid rgba(45,198,83,.3);}
+    .tip-blue  {background:rgba(69,123,157,.1);border:2px solid rgba(69,123,157,.3);}
+    .tip-icon{font-size:28px;flex-shrink:0;}
+    .tip-text{font-size:.92rem;line-height:1.65;color:#333;}
+    .tip-text strong{display:block;margin-bottom:4px;font-size:.95rem;}
+
+    /* Quiz / reflection box */
+    .reflect-box{
+      background:linear-gradient(135deg,var(--biru-tua),#2a5f8f);
+      border-radius:20px;padding:30px 28px;color:#fff;text-align:center;margin-top:20px;
+    }
+    .reflect-box h3{font-family:'Baloo 2',cursive;font-size:1.4rem;margin-bottom:10px;}
+    .reflect-box p{color:rgba(255,255,255,.8);font-size:.9rem;margin-bottom:20px;}
+    .reflect-q{
+      background:rgba(255,255,255,.1);border-radius:12px;padding:14px 18px;
+      margin-bottom:10px;font-size:.92rem;text-align:left;display:flex;gap:10px;align-items:flex-start;
+    }
+    .q-num{min-width:28px;height:28px;background:var(--kuning);color:var(--biru-tua);
+      border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:.8rem;flex-shrink:0;}
+
+    /* Bottom navigation */
+    .bottom-strip{
+      background:var(--biru-tua);color:#fff;padding:28px 24px;text-align:center;
+    }
+    .bottom-strip p{color:rgba(255,255,255,.7);margin-bottom:16px;font-size:.9rem;}
+    .bottom-btns{display:flex;justify-content:center;gap:12px;flex-wrap:wrap;}
+    .bb{
+      padding:12px 28px;border-radius:50px;font-family:'Baloo 2',cursive;
+      font-size:1rem;font-weight:800;cursor:pointer;border:none;
+      text-decoration:none;transition:transform .2s;display:inline-block;
+    }
+    .bb-menu{background:rgba(255,255,255,.15);color:#fff;border:2px solid rgba(255,255,255,.3);}
+    .bb-menu:hover{background:rgba(255,255,255,.25);}
+    .bb-cp{background:var(--biru);color:#fff;}
+    .bb-cp:hover{transform:scale(1.04);}
+    .bb-home{background:var(--kuning);color:var(--biru-tua);}
+    .bb-home:hover{transform:scale(1.04);}
+  </style>
+</head>
+<body>
+  <div class="rainbow"></div>
+  <div class="read-progress" id="rp"></div>
+
+  <!-- Nav -->
+  <div class="nav">
+    <div class="nav-left">
+      <a href="index.html" class="nav-btn btn-home">🏠 Beranda</a>
+      <a href="menu.html" class="nav-btn btn-menu">← Menu</a>
+    </div>
+    <div class="nav-title">📚 Materi Bab 7</div>
+  </div>
+
+  <!-- Hero -->
+  <div class="hero">
+    <div class="hero-badge">📖 Materi Pembelajaran</div>
+    <h1>Daerahku <em>Kebanggaanku</em></h1>
+    <p>Informatika / ICT · Kelas 5 SD · Bab 7</p>
+    <div class="hero-emojis">🏝️ 🌋 🏯 🎭 🌺</div>
+  </div>
+
+  <!-- Table of Contents -->
+  <div class="toc">
+    <div class="toc-box">
+      <div class="toc-title">📋 Daftar Materi</div>
+      <div class="toc-list">
+        <a class="toc-item" href="#sec1"><span class="toc-num">1</span> Apa Itu Budaya Daerah?</a>
+        <a class="toc-item" href="#sec2"><span class="toc-num">2</span> Contoh Kebudayaan Daerah di Indonesia</a>
+        <a class="toc-item" href="#sec3"><span class="toc-num">3</span> Mencari Informasi Daerah Menggunakan Internet</a>
+        <a class="toc-item" href="#sec4"><span class="toc-num">4</span> Membuat Presentasi Digital tentang Daerahku</a>
+        <a class="toc-item" href="#sec5"><span class="toc-num">5</span> Menjaga Keamanan saat Berinternet</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════ CONTENT ═══════════ -->
+  <div class="content">
+
+    <!-- ── SECTION 1 ── -->
+    <div class="section" id="sec1">
+      <div class="sec-header">
+        <div class="sec-icon-wrap ic-1">🏡</div>
+        <div>
+          <span class="sec-num">Materi 1</span>
+          <div class="sec-title">Apa Itu Budaya Daerah?</div>
+        </div>
+      </div>
+
+      <div class="def-box">
+        <div class="def-title">📌 Definisi</div>
+        <div class="def-text">
+          <strong>Keberagaman daerah</strong> menurut definisi yang tercantum dalam Kamus Besar Bahasa Indonesia (KBBI), kebudayaan merujuk pada hasil kegiatan dan penciptaan batin manusia, seperti kepercayaan, kesenian, dan adat istiadat.
+
+Sementara itu, daerah diartikan sebagai wilayah atau kawasan. Dengan demikian, budaya daerah dapat dipahami sebagai seluruh pola kehidupan dan ekspresi budaya yang muncul di suatu wilayah tertentu.
+
+Hal ini mencakup nilai-nilai, adat istiadat, bahasa, seni, dan unsur kebudayaan lainnya yang menjadi identitas khas suatu komunitas. Budaya daerah bukan hanya sekadar warisan leluhur, tetapi juga identitas yang hidup dan terus berkembang.
+
+Oleh karena itu, menjaga dan memahami budaya daerah adalah langkah penting dalam melestarikan kekayaan warisan nenek moyang bagi generasi yang akan datang. Dapat di artikan bahwa <strong>budaya daerah</strong> adalah kebiasaan, adat istiadat, kesenian, dan nilai-nilai yang tumbuh, berkembang, serta diwariskan turun-temurun oleh masyarakat di suatu wilayah tertentu.
+        </div>
+      </div>
+
+      <div class="def-box">
+        <div class="def-title">📌 Ciri-ciri</div>
+        <div class="def-text">
+          <div class="c-card">
+            <p>Ciri-ciri Budaya Daerah yang Penting Dipelajari. Melalui ciri-ciri uniknya, budaya daerah menjadi harta berharga yang dapat memperkaya keanekaragaman budaya Indonesia.</p>
+          </div>
+          
+          <!-- Ciri-ciri dengan nomor urut -->
+          <div class="ciri-list">
+            <div class="ciri-item">
+              <div class="ciri-num">1</div>
+              <div class="ciri-content">
+                <div class="ciri-title">Menunjukkan Karakteristik Daerah yang Khas</div>
+                <div class="ciri-desc">Budaya daerah identik dengan karakteristik lokal yang mencerminkan keberagaman geografis, sejarah, dan sosial masyarakat setempat.</div>
+              </div>
+            </div>
+            <div class="ciri-item">
+              <div class="ciri-num">2</div>
+              <div class="ciri-content">
+                <div class="ciri-title">Menyandang Tradisi dan Adat Istiadat Daerah yang Unik
+</div>
+                <div class="ciri-desc">Tradisi dan adat istiadat menjadi pilar utama dalam budaya daerah, menambah warna kehidupan sehari-hari dan mengukir identitas masyarakat.</div>
+              </div>
+            </div>
+            <div class="ciri-item">
+              <div class="ciri-num">3</div>
+              <div class="ciri-content">
+                <div class="ciri-title">Mempertahankan Unsur Budaya Asli dan Tradisional</div>
+                <div class="ciri-desc">Keberlanjutan unsur budaya asli dan tradisional menjadi penanda kekayaan budaya daerah yang harus dijaga bersama.</div>
+                
+              </div>
+            </div>
+            <div class="ciri-item">
+              <div class="ciri-num">4</div>
+              <div class="ciri-content">
+                <div class="ciri-title">Diikuti dan Dijunjung Tinggi oleh Warga Daerah
+</div>
+                <div class="ciri-desc">Budaya daerah bukan hanya sebatas warisan, tetapi juga nilai-nilai yang dihormati dan dijunjung tinggi oleh generasi setempat.</div>
+              </div>
+            </div>
+            <div class="ciri-item">
+              <div class="ciri-num">5</div>
+              <div class="ciri-content">
+                <div class="ciri-title">Terdapat Bahasa dan Seni yang Khas Daerah
+</div>
+                <div class="ciri-desc">Bahasa dan seni merupakan ekspresi budaya daerah yang memberikan ciri unik dan memperkaya kehidupan artistik masyarakat.</div>
+              </div>
+            </div>
+             <div class="ciri-item">
+              <div class="ciri-num">6</div>
+              <div class="ciri-content">
+                <div class="ciri-title">Terdapat Unsur Kepercayaan yang Dianut
+
+</div>
+                <div class="ciri-desc">Kepercayaan lokal menjadi bagian tak terpisahkan dari budaya daerah, menciptakan keharmonisan antara keyakinan dan kehidupan sehari-hari.</div>
+              </div>
+            </div>
+             <div class="ciri-item">
+              <div class="ciri-num">7</div>
+              <div class="ciri-content">
+                <div class="ciri-title">Mempunyai Warisan Sejarah yang Bernilai
+</div>
+                <div class="ciri-desc">Warisan sejarah dalam budaya daerah menyimpan jejak perjalanan waktu dan peristiwa bersejarah yang membentuk karakter masyarakat.</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="tip-box tip-yellow">
+        <span class="tip-icon">💡</span>
+        <div class="tip-text">
+          <strong>Tahukah Kamu?</strong>
+          Indonesia memiliki lebih dari 300 kelompok etnis dan lebih dari 700 bahasa daerah yang berbeda-beda. Ini menjadikan Indonesia salah satu negara paling beragam di dunia!
+        </div>
+      </div>
+
+      <div class="grid-3">
+        <div class="mini-card mc-1"><span class="mc-icon">🎭</span><div class="mc-label">Budaya</div><div class="mc-sub">Tarian, musik, dan tradisi daerah</div></div>
+        <div class="mini-card mc-2"><span class="mc-icon">🏞️</span><div class="mc-label">Alam</div><div class="mc-sub">Gunung, laut, hutan, dan danau</div></div>
+        <div class="mini-card mc-3"><span class="mc-icon">🍜</span><div class="mc-label">Kuliner</div><div class="mc-sub">Makanan khas yang lezat</div></div>
+        <div class="mini-card mc-4"><span class="mc-icon">🏛️</span><div class="mc-label">Sejarah</div><div class="mc-sub">Candi, keraton, dan bangunan bersejarah</div></div>
+        <div class="mini-card mc-5"><span class="mc-icon">🪡</span><div class="mc-label">Kerajinan</div><div class="mc-sub">Batik, ukiran, anyaman, dan tenun</div></div>
+        <div class="mini-card mc-6"><span class="mc-icon">👗</span><div class="mc-label">Pakaian</div><div class="mc-sub">Baju adat yang khas dan indah</div></div>
+      </div>
+    </div>
+
+    <!-- ── SECTION 2 ── -->
+    <div class="section" id="sec2">
+      <div class="sec-header">
+        <div class="sec-icon-wrap ic-2">🗺️</div>
+        <div>
+          <span class="sec-num">Materi 2</span>
+          <div class="sec-title">Contoh Kebudayaan Daerah di Indonesia</div>
+        </div>
+      </div>
+
+      <div class="c-card">
+        <p>Setiap provinsi dan kota di Indonesia memiliki ciri khas tersendiri. Berikut beberapa contoh kebudayaan daerah dari berbagai wilayah di Indonesia:</p>
+      </div>
+
+      <div class="grid-2">
+        <div class="mini-card mc-1" style="text-align:left;padding:18px 20px;">
+          <span class="mc-icon">🏯</span>
+          <div class="mc-label" style="font-size:1rem;">Yogyakarta</div>
+          <div class="mc-sub" style="font-size:.85rem;margin-top:6px;">Candi Borobudur, Keraton, Batik Jogja, Gudeg, dan Tari Klasik Jawa</div>
+        </div>
+        <div class="mini-card mc-2" style="text-align:left;padding:18px 20px;">
+          <span class="mc-icon">🌋</span>
+          <div class="mc-label" style="font-size:1rem;">Bali</div>
+          <div class="mc-sub" style="font-size:.85rem;margin-top:6px;">Tari Kecak, Sawah Terasering, Pura Tanah Lot, dan Nasi Campur Bali</div>
+        </div>
+        <div class="mini-card mc-3" style="text-align:left;padding:18px 20px;">
+          <span class="mc-icon">🌺</span>
+          <div class="mc-label" style="font-size:1rem;">Sumatera Barat</div>
+          <div class="mc-sub" style="font-size:.85rem;margin-top:6px;">Rumah Gadang, Rendang, Tari Piring, dan Danau Maninjau</div>
+        </div>
+        <div class="mini-card mc-4" style="text-align:left;padding:18px 20px;">
+          <span class="mc-icon">🎭</span>
+          <div class="mc-label" style="font-size:1rem;">Sulawesi Selatan</div>
+          <div class="mc-sub" style="font-size:.85rem;margin-top:6px;">Rumah Tongkonan, Tana Toraja, Coto Makassar, dan Tari Pakarena</div>
+        </div>
+        <div class="mini-card mc-5" style="text-align:left;padding:18px 20px;">
+          <span class="mc-icon">🏄</span>
+          <div class="mc-label" style="font-size:1rem;">Papua</div>
+          <div class="mc-sub" style="font-size:.85rem;margin-top:6px;">Raja Ampat, Tari Saman Asmat, Koteka, dan Hutan Hujan Tropis</div>
+        </div>
+        <div class="mini-card mc-6" style="text-align:left;padding:18px 20px;">
+          <span class="mc-icon">🎀</span>
+          <div class="mc-label" style="font-size:1rem;">Kalimantan</div>
+          <div class="mc-sub" style="font-size:.85rem;margin-top:6px;">Tari Hudoq, Mandau, Rumah Betang, dan Orangutan</div>
+        </div>
+      </div>
+
+      <div class="tip-box tip-green">
+        <span class="tip-icon">🌟</span>
+        <div class="tip-text">
+          <strong>Pesan Budi Pekerti</strong>
+          Setiap daerah memiliki keistimewaan yang berbeda-beda. Kita harus menghargai dan menghormati budaya daerah lain, karena perbedaan itulah yang membuat Indonesia menjadi indah!
+        </div>
+      </div>
+    </div>
+
+    <!-- ── SECTION 3 ── -->
+    <div class="section" id="sec3">
+      <div class="sec-header">
+        <div class="sec-icon-wrap ic-3">🔍</div>
+        <div>
+          <span class="sec-num">Materi 3</span>
+          <div class="sec-title">Mencari Informasi Daerah Menggunakan Internet</div>
+        </div>
+      </div>
+
+      <div class="def-box">
+        <div class="def-title">📌 Pengertian</div>
+        <div class="def-text">
+          <strong>Internet</strong> adalah jaringan komputer yang menghubungkan jutaan perangkat di seluruh dunia. Kita dapat menggunakan internet untuk mencari informasi tentang daerah kita dengan cepat dan mudah.
+        </div>
+      </div>
+
+      <div class="c-card">
+        <p>Salah satu cara terbaik untuk mengenal daerahmu adalah dengan <strong>mencari informasi di internet</strong>. Kamu dapat menemukan foto, video, artikel, dan data tentang budaya, sejarah, dan keistimewaan daerahmu.</p>
+      </div>
+
+      <p style="font-weight:800;font-size:1rem;color:var(--biru-tua);margin-bottom:14px;">🪜 Langkah-langkah Mencari Informasi di Internet:</p>
+      <div class="step-list">
+        <div class="step">
+          <div class="step-num sn-a">1</div>
+          <div class="step-content">
+            <div class="step-title">🌐 Buka Browser</div>
+            <div class="step-desc">Buka browser di komputer atau tablet kamu, seperti Google Chrome, Microsoft Edge, atau Mozilla Firefox.</div>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num sn-b">2</div>
+          <div class="step-content">
+            <div class="step-title">🔎 Ketik Kata Kunci yang Tepat</div>
+            <div class="step-desc">Gunakan kata kunci yang spesifik, misalnya: "budaya khas [nama daerahmu]" atau "wisata alam [nama kota]". Semakin spesifik kata kunci, semakin baik hasilnya!</div>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num sn-c">3</div>
+          <div class="step-content">
+            <div class="step-title">📋 Pilih Sumber Terpercaya</div>
+            <div class="step-desc">Pilih sumber informasi yang terpercaya seperti website pemerintah daerah (.go.id), website museum, atau ensiklopedi online seperti Wikipedia Indonesia.</div>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num sn-d">4</div>
+          <div class="step-content">
+            <div class="step-title">📝 Catat Informasi Penting</div>
+            <div class="step-desc">Tuliskan informasi penting yang kamu temukan ke dalam buku catatan atau dokumen digital. Jangan lupa tulis sumbernya!</div>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num sn-e">5</div>
+          <div class="step-content">
+            <div class="step-title">🖼️ Simpan Gambar yang Relevan</div>
+            <div class="step-desc">Simpan gambar-gambar menarik yang berhubungan dengan daerahmu untuk digunakan dalam presentasi. Pastikan gambar boleh digunakan (bukan hak cipta).</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="tip-box tip-blue">
+        <span class="tip-icon">⚠️</span>
+        <div class="tip-text">
+          <strong>Perhatikan!</strong>
+          Tidak semua informasi di internet itu benar. Selalu cek kebenaran informasi dari minimal 2 sumber berbeda, dan tanyakan kepada guru atau orang tua jika tidak yakin.
+        </div>
+      </div>
+    </div>
+
+    <!-- ── SECTION 4 ── -->
+    <div class="section" id="sec4">
+      <div class="sec-header">
+        <div class="sec-icon-wrap ic-4">🖥️</div>
+        <div>
+          <span class="sec-num">Materi 4</span>
+          <div class="sec-title">Membuat Presentasi Digital tentang Daerahku</div>
+        </div>
+      </div>
+
+      <div class="def-box">
+        <div class="def-title">📌 Pengertian</div>
+        <div class="def-text">
+          <strong>Presentasi digital</strong> adalah cara menyajikan informasi menggunakan slide yang ditampilkan di layar komputer atau proyektor. Presentasi yang baik menggunakan kombinasi teks, gambar, dan warna yang menarik.
+        </div>
+      </div>
+
+      <div class="c-card">
+        <p>Setelah mengumpulkan informasi tentang daerahmu, kamu bisa membuat <strong>presentasi digital</strong> yang menarik menggunakan aplikasi seperti <em>Microsoft PowerPoint</em> atau <em>Google Slides</em>.</p>
+      </div>
+
+      <p style="font-weight:800;font-size:1rem;color:var(--biru-tua);margin-bottom:14px;">📐 Langkah-langkah Membuat Presentasi Digital:</p>
+      <div class="step-list">
+        <div class="step">
+          <div class="step-num sn-a">1</div>
+          <div class="step-content">
+            <div class="step-title">📌 Slide Judul</div>
+            <div class="step-desc">Tuliskan nama daerahmu sebagai judul. Tambahkan gambar daerah yang menarik sebagai latar belakang dan tulis nama kamu sebagai pembuat.</div>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num sn-b">2</div>
+          <div class="step-content">
+            <div class="step-title">🗺️ Slide Pengenalan Daerah</div>
+            <div class="step-desc">Ceritakan letak geografis daerahmu, seperti provinsi mana, pulau apa, dan perbatasan dengan daerah lain.</div>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num sn-c">3</div>
+          <div class="step-content">
+            <div class="step-title">🎭 Slide Budaya dan Tradisi</div>
+            <div class="step-desc">Tampilkan kebudayaan khas daerahmu: tarian, musik, pakaian adat, dan upacara tradisional. Gunakan foto-foto yang menarik.</div>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num sn-d">4</div>
+          <div class="step-content">
+            <div class="step-title">🍜 Slide Kuliner Khas</div>
+            <div class="step-desc">Perkenalkan makanan khas daerahmu yang lezat! Sertakan foto makanan dan cerita singkat tentang cara membuatnya.</div>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num sn-e">5</div>
+          <div class="step-content">
+            <div class="step-title">🌟 Slide Kebanggaan & Penutup</div>
+            <div class="step-desc">Ceritakan mengapa kamu bangga dengan daerahmu dan ajak teman-teman untuk menghargai keberagaman Indonesia. Tutup dengan ucapan terima kasih.</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="tip-box tip-yellow">
+        <span class="tip-icon">🎨</span>
+        <div class="tip-text">
+          <strong>Tips Presentasi Keren!</strong>
+          Gunakan maksimal 3 warna yang serasi, pilih font yang mudah dibaca, dan jangan terlalu banyak teks di satu slide. Gambar yang menarik lebih berkesan daripada tulisan yang panjang!
+        </div>
+      </div>
+    </div>
+
+    <!-- ── SECTION 5 ── -->
+    <div class="section" id="sec5">
+      <div class="sec-header">
+        <div class="sec-icon-wrap ic-5">🔐</div>
+        <div>
+          <span class="sec-num">Materi 5</span>
+          <div class="sec-title">Menjaga Keamanan saat Berinternet</div>
+        </div>
+      </div>
+
+      <div class="def-box">
+        <div class="def-title">📌 Pengertian</div>
+        <div class="def-text">
+          <strong>Keamanan berinternet</strong> adalah cara bijak dan aman menggunakan internet agar terhindar dari bahaya seperti penipuan, konten tidak pantas, atau pencurian data pribadi.
+        </div>
+      </div>
+
+      <div class="c-card">
+        <p>Saat mencari informasi di internet, kamu harus tetap <strong>aman dan bijak</strong>. Internet adalah tempat yang penuh manfaat, tetapi juga bisa berbahaya jika tidak digunakan dengan hati-hati.</p>
+      </div>
+
+      <div class="grid-2">
+        <div class="mini-card mc-3" style="text-align:left;padding:18px 20px;">
+          <span class="mc-icon">✅</span>
+          <div class="mc-label" style="color:#1a8a3b;">Yang Boleh Dilakukan</div>
+          <div class="mc-sub" style="font-size:.83rem;margin-top:8px;line-height:1.6;">
+            - Mencari info tentang budaya daerah<br/>
+            - Menggunakan website resmi/terpercaya<br/>
+            - Minta izin orang tua sebelum browsing<br/>
+            - Simpan situs yang bermanfaat
+          </div>
+        </div>
+        <div class="mini-card mc-1" style="text-align:left;padding:18px 20px;">
+          <span class="mc-icon">❌</span>
+          <div class="mc-label" style="color:#c0392b;">Yang Tidak Boleh Dilakukan</div>
+          <div class="mc-sub" style="font-size:.83rem;margin-top:8px;line-height:1.6;">
+            - Membagikan data pribadi online<br/>
+            - Mengklik iklan atau link sembarangan<br/>
+            - Mengunduh file dari sumber tidak jelas<br/>
+            - Bertemu orang asing dari internet
+          </div>
+        </div>
+      </div>
+
+      <div class="tip-box tip-blue">
+        <span class="tip-icon">🛡️</span>
+        <div class="tip-text">
+          <strong>Aturan Emas Berinternet Aman:</strong>
+          Selalu gunakan internet bersama orang tua atau guru. Jika menemukan konten yang tidak pantas atau merasa tidak nyaman, segera tutup dan ceritakan kepada orang dewasa terpercaya!
+        </div>
+      </div>
+    </div>
+
+    <!-- ── Refleksi ── -->
+    <div class="reflect-box">
+      <h3>🤔 Yuk, Refleksi Diri!</h3>
+      <p>Setelah mempelajari materi ini, jawab pertanyaan berikut dalam hati:</p>
+      <div class="reflect-q"><span class="q-num">1</span> Apa 3 kebanggaan daerahmu yang paling ingin kamu ceritakan kepada teman?</div>
+      <div class="reflect-q"><span class="q-num">2</span> Bagaimana cara kamu menggunakan internet untuk mencari informasi tentang daerahmu?</div>
+      <div class="reflect-q"><span class="q-num">3</span> Mengapa penting untuk mengenal dan mencintai daerahmu sendiri?</div>
+      <div class="reflect-q"><span class="q-num">4</span> Apa yang akan kamu ceritakan dalam presentasi digitalmu tentang daerahku?</div>
+    </div>
+
+  </div><!-- /content -->
+
+  <!-- Bottom Navigation -->
+  <div class="bottom-strip">
+    <p>Kamu telah selesai membaca Materi Bab 7! Selamat belajar 🎉</p>
+    <div class="bottom-btns">
+      <a href="index.html" class="bb bb-home">🏠 Beranda</a>
+      <a href="menu.html" class="bb bb-menu">📋 Menu</a>
+      <a href="cp_tp.html" class="bb bb-cp">🎯 Lihat CP & TP</a>
+    </div>
+  </div>
+
+  <script>
+    // Reading progress bar
+    window.addEventListener('scroll', () => {
+      const scrollTop = window.scrollY;
+      const docH = document.documentElement.scrollHeight - window.innerHeight;
+      const pct = (scrollTop / docH) * 100;
+      document.getElementById('rp').style.width = pct + '%';
+    });
+  </script>
+</body>
+</html>

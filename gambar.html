@@ -1,0 +1,1157 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Galeri Gambar</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Baloo+2:wght@400;600;700;800&display=swap');
+
+  :root {
+    --primary: #6c63ff;
+    --secondary: #ff6584;
+    --accent: #43e97b;
+    --bg: #f0f4ff;
+    --card: #ffffff;
+    --text: #2d2d4e;
+    --shadow: 0 8px 32px rgba(108,99,255,0.13);
+    --biru-tua: #1e3a8a;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body{
+    min-height:100vh;font-family:'Nunito',sans-serif;
+    background:linear-gradient(150deg,#0d2137 0%,#1a3a5c 50%,#1f5f74 100%);
+    color:#fff;padding-bottom:80px;
+  }
+
+  .rainbow{position:fixed;top:0;left:0;right:0;height:6px;z-index:100;
+    background:repeating-linear-gradient(90deg,
+      #E63946 0 16.6%,#FFD60A 16.6% 33.2%,#2DC653 33.2% 49.8%,
+      #457B9D 49.8% 66.4%,#FF9F1C 66.4% 83%,#7B2D8B 83% 100%);}
+
+  .nav{
+    position:sticky;top:0;z-index:90;display:flex;align-items:center;
+    justify-content:space-between;padding:12px 24px;
+    background:rgba(245,240,232,.92);backdrop-filter:blur(10px);
+    border-bottom:2px solid rgba(29,53,87,.1);margin-top:6px;
+  }
+  .nav-left{display:flex;gap:8px;}
+  .nav-btn{
+    padding:7px 16px;border-radius:50px;font-size:.82rem;font-weight:800;
+    cursor:pointer;text-decoration:none;border:2px solid;transition:all .2s;
+  }
+  .btn-home{background:var(--biru-tua);color:#fff;border-color:var(--biru-tua);}
+  .btn-home:hover{opacity:.85;}
+  .btn-menu{background:transparent;color:var(--biru-tua);border-color:var(--biru-tua);}
+  .btn-menu:hover{background:var(--biru-tua);color:#fff;}
+  .nav-title{font-family:'Baloo 2',cursive;font-size:1rem;color:var(--biru-tua);font-weight:700;}
+
+  main { padding: 22px 16px 40px; max-width: 700px; margin: 0 auto; }
+
+  .section-title {
+    font-family: 'Baloo 2', cursive; font-size: 1.2rem; font-weight: 800;
+    color: #b9acff; margin-bottom: 14px;
+    display: flex; align-items: center; gap: 8px;
+  }
+
+  /* ===== FILTER TABS ===== */
+  .filter-area { margin-bottom: 20px; }
+  .filter-tabs { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 10px; }
+
+  .tab-btn {
+    padding: 8px 16px; border-radius: 20px; border: 2px solid var(--primary);
+    background: transparent; color: #c4bfff;
+    font-family: 'Nunito', sans-serif; font-weight: 700; font-size: 0.82rem;
+    cursor: pointer; transition: all 0.2s; display: flex; align-items: center; gap: 6px;
+  }
+  .tab-btn.active, .tab-btn:hover { background: var(--primary); color: white; }
+
+  /* Edit label button on tab */
+  .tab-edit-btn {
+    background: rgba(255,255,255,.2); border: none; border-radius: 50%;
+    width: 18px; height: 18px; font-size: .65rem; cursor: pointer;
+    display: inline-flex; align-items: center; justify-content: center;
+    color: white; transition: background .2s; flex-shrink: 0;
+  }
+  .tab-edit-btn:hover { background: rgba(255,255,255,.4); }
+
+  /* Add category button */
+  .btn-add-category {
+    padding: 8px 16px; border-radius: 20px; border: 2px dashed rgba(108,99,255,.5);
+    background: transparent; color: rgba(180,170,255,.7);
+    font-family: 'Nunito', sans-serif; font-weight: 700; font-size: 0.82rem;
+    cursor: pointer; transition: all 0.2s;
+  }
+  .btn-add-category:hover { border-color: var(--primary); color: #c4bfff; background: rgba(108,99,255,.1); }
+
+  /* ===== IMAGE GRID ===== */
+  .image-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; margin-bottom: 28px; }
+
+  .image-card {
+    background: var(--card); border-radius: 18px; box-shadow: var(--shadow);
+    overflow: hidden; transition: transform 0.22s, box-shadow 0.22s;
+    animation: fadeIn 0.4s ease both; position: relative;
+    display: none;
+  }
+  .image-card.show { display: block; }
+  .image-card:hover { transform: translateY(-4px); box-shadow: 0 16px 40px rgba(108,99,255,0.18); }
+
+  .img-wrap {
+    width: 100%; aspect-ratio: 4/3; overflow: hidden;
+    background: linear-gradient(135deg, #e0d7ff, #ffd6e7);
+    display: flex; align-items: center; justify-content: center;
+    position: relative; cursor: pointer;
+  }
+
+  .emoji-ph { font-size: 3.5rem; z-index: 1; }
+  .custom-photo {
+    width: 100%; height: 100%; object-fit: cover;
+    position: absolute; inset: 0; opacity: 0;
+    transition: opacity 0.35s ease;
+  }
+  .custom-photo.show { opacity: 1; }
+
+  .img-label {
+    position: absolute; top: 8px; right: 8px;
+    background: var(--secondary); color: white;
+    border-radius: 8px; font-size: 0.68rem; font-weight: 800;
+    padding: 2px 8px; letter-spacing: 0.5px; z-index: 2;
+  }
+
+  /* Delete card button */
+  .btn-del-card {
+    position: absolute; top: 8px; left: 8px;
+    background: rgba(230,57,70,.85); color: white; border: none;
+    border-radius: 50%; width: 26px; height: 26px; font-size: .8rem;
+    cursor: pointer; z-index: 3; display: none; align-items: center; justify-content: center;
+    transition: background .2s;
+  }
+  .image-card:hover .btn-del-card { display: flex; }
+  .btn-del-card:hover { background: #c1121f; }
+
+  .file-input { display: none; }
+
+  .card-info { padding: 10px 12px 12px; }
+  .card-title {
+    font-weight: 800; font-size: 0.95rem; margin-bottom: 3px;
+    color: var(--text); cursor: pointer; display: flex; align-items: center; gap: 6px;
+  }
+  .card-title-text { flex: 1; }
+  .title-edit-btn {
+    font-size: .7rem; background: rgba(108,99,255,.12); border: none;
+    border-radius: 6px; padding: 2px 6px; cursor: pointer; color: var(--primary);
+    font-family: 'Nunito', sans-serif; font-weight: 700; opacity: 0;
+    transition: opacity .2s;
+  }
+  .image-card:hover .title-edit-btn { opacity: 1; }
+  .card-desc { font-size: 0.78rem; color: #888; line-height: 1.4; }
+
+  /* ===== ADD CARD BUTTON in grid ===== */
+  .add-card-tile {
+    background: rgba(255,255,255,.08); border: 2px dashed rgba(108,99,255,.4);
+    border-radius: 18px; display: none; flex-direction: column; align-items: center;
+    justify-content: center; cursor: pointer; transition: all .2s; min-height: 180px;
+    color: rgba(180,170,255,.7); gap: 8px;
+  }
+  .add-card-tile.show { display: flex; }
+  .add-card-tile:hover { border-color: var(--primary); background: rgba(108,99,255,.15); color: #c4bfff; }
+  .add-card-tile .plus { font-size: 2rem; }
+  .add-card-tile .plus-label { font-size: .82rem; font-weight: 700; }
+
+  /* ===== LIGHTBOX ===== */
+  .lightbox {
+    display: none; position: fixed; inset: 0;
+    background: rgba(20,10,50,0.88); z-index: 999;
+    align-items: center; justify-content: center; padding: 20px;
+  }
+  .lightbox.open { display: flex; }
+
+  .lightbox-content {
+    background: white; border-radius: 22px; padding: 20px;
+    max-width: 440px; width: 100%; text-align: center;
+    position: relative; animation: popIn 0.3s cubic-bezier(.175,.885,.32,1.275);
+    max-height: 90vh; overflow-y: auto;
+  }
+
+  .lightbox-img-wrap {
+    width: 100%; aspect-ratio: 4/3; border-radius: 14px; overflow: hidden;
+    background: linear-gradient(135deg, #e0d7ff, #ffd6e7);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 5rem; margin-bottom: 14px; position: relative;
+  }
+  .lightbox-img-wrap img.lb-photo {
+    width: 100%; height: 100%; object-fit: cover; position: absolute; inset: 0;
+  }
+
+  .lightbox-title { font-family: 'Baloo 2', cursive; font-size: 1.3rem; font-weight: 800; color: var(--primary); margin-bottom: 8px; }
+  .lightbox-desc { font-size: 0.88rem; color: #666; line-height: 1.6; margin-bottom: 14px; }
+
+  .lightbox-close {
+    position: absolute; top: 12px; right: 14px;
+    font-size: 1.5rem; background: none; border: none; cursor: pointer; color: #aaa; font-weight: 900;
+  }
+
+  .btn-row-lb { display: flex; gap: 10px; }
+
+  .btn-primary {
+    flex: 1; background: linear-gradient(135deg, var(--primary), #a78bfa);
+    color: white; font-family: 'Nunito', sans-serif; font-weight: 800; font-size: 0.95rem;
+    border: none; border-radius: 14px; padding: 12px 10px;
+    cursor: pointer; text-align: center; transition: transform 0.18s;
+    box-shadow: 0 4px 16px rgba(108,99,255,0.25);
+  }
+  .btn-primary:hover { transform: translateY(-2px); }
+
+  .btn-outline-lb {
+    flex: 1; background: white; color: var(--primary);
+    font-family: 'Nunito', sans-serif; font-weight: 800; font-size: 0.95rem;
+    border: 2px solid var(--primary); border-radius: 14px; padding: 12px 10px;
+    cursor: pointer; text-align: center; transition: all 0.18s; text-decoration: none;
+    display: inline-block;
+  }
+  .btn-outline-lb:hover { background: var(--primary); color: white; }
+
+  .btn-reset-photo {
+    background: #fff0f3; color: var(--secondary); border: 2px solid var(--secondary);
+    border-radius: 10px; font-family: 'Nunito', sans-serif; font-weight: 700;
+    font-size: 0.78rem; padding: 5px 12px; cursor: pointer; margin-bottom: 12px;
+    display: none; transition: all 0.18s;
+  }
+  .btn-reset-photo:hover { background: var(--secondary); color: white; }
+  .btn-reset-photo.visible { display: inline-block; }
+
+  .info-banner {
+    background: linear-gradient(135deg, #1a3a5c, #1f5f74);
+    border-left: 4px solid #6c63ff;
+    border-radius: 14px; padding: 14px 16px; margin-bottom: 22px;
+    font-size: 0.86rem; color: rgba(255,255,255,.85); line-height: 1.6;
+  }
+
+  .fun-badge {
+    display: inline-block; background: linear-gradient(135deg, #43e97b, #38f9d7);
+    color: white; border-radius: 10px; padding: 3px 10px;
+    font-size: 0.78rem; font-weight: 800; margin-left: 8px; vertical-align: middle;
+  }
+
+  .toast {
+    position: fixed; bottom: 90px; left: 50%; transform: translateX(-50%) translateY(20px);
+    background: #2d2d4e; color: white; border-radius: 14px;
+    padding: 10px 22px; font-weight: 700; font-size: 0.88rem;
+    opacity: 0; transition: all 0.3s; z-index: 9999; white-space: nowrap; pointer-events: none;
+  }
+  .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+  .bottom-nav {
+    position: fixed; bottom: 0; left: 0; right: 0;
+    background: white; box-shadow: 0 -4px 20px rgba(0,0,0,0.09);
+    display: flex; justify-content: space-around; padding: 10px 0 6px; z-index: 200;
+  }
+  .nav-item {
+    display: flex; flex-direction: column; align-items: center; gap: 2px;
+    font-size: 0.68rem; font-weight: 700; color: #bbb; text-decoration: none;
+  }
+  .nav-item.active { color: var(--primary); }
+  .nav-item .nav-icon { font-size: 1.4rem; }
+
+  /* ===== MODAL INPUT ===== */
+  .modal-overlay {
+    display: none; position: fixed; inset: 0;
+    background: rgba(10,10,30,.75); z-index: 1000;
+    align-items: center; justify-content: center; padding: 20px;
+  }
+  .modal-overlay.open { display: flex; }
+  .modal-box {
+    background: white; border-radius: 20px; padding: 28px 24px;
+    max-width: 360px; width: 100%; text-align: left;
+    animation: popIn .3s cubic-bezier(.175,.885,.32,1.275);
+  }
+  .modal-box h3 {
+    font-family: 'Baloo 2', cursive; font-size: 1.2rem; color: var(--primary);
+    margin-bottom: 16px;
+  }
+  .modal-field { margin-bottom: 14px; }
+  .modal-field label { display: block; font-size: .82rem; font-weight: 700; color: #555; margin-bottom: 6px; }
+  .modal-field input, .modal-field textarea {
+    width: 100%; border: 2px solid #e0d7ff; border-radius: 10px;
+    padding: 10px 12px; font-family: 'Nunito', sans-serif; font-size: .9rem;
+    color: var(--text); outline: none; transition: border .2s;
+  }
+  .modal-field input:focus, .modal-field textarea:focus { border-color: var(--primary); }
+  .modal-field textarea { resize: vertical; min-height: 72px; }
+  .modal-btns { display: flex; gap: 10px; margin-top: 18px; }
+  .modal-btn-ok {
+    flex: 1; background: linear-gradient(135deg, var(--primary), #a78bfa);
+    color: white; border: none; border-radius: 12px; padding: 12px;
+    font-family: 'Nunito', sans-serif; font-weight: 800; font-size: .95rem;
+    cursor: pointer; transition: transform .18s;
+  }
+  .modal-btn-ok:hover { transform: translateY(-2px); }
+  .modal-btn-cancel {
+    flex: 1; background: white; color: #999; border: 2px solid #ddd;
+    border-radius: 12px; padding: 12px;
+    font-family: 'Nunito', sans-serif; font-weight: 700; font-size: .95rem; cursor: pointer;
+  }
+  .modal-btn-cancel:hover { border-color: #bbb; color: #666; }
+
+  @keyframes fadeIn { from { opacity:0; transform:translateY(18px); } to { opacity:1; transform:none; } }
+  @keyframes popIn { from { opacity:0; transform:scale(0.85); } to { opacity:1; transform:scale(1); } }
+</style>
+</head>
+<body>
+<div class="rainbow"></div>
+
+<div class="nav">
+  <div class="nav-left">
+    <a href="index.html" class="nav-btn btn-home">🏠 Beranda</a>
+    <a href="menu.html" class="nav-btn btn-menu">← Menu</a>
+  </div>
+  <div class="nav-title">🖼️ Galeri Gambar</div>
+</div>
+
+<main>
+  <div class="info-banner">
+    📷 <strong>Klik foto</strong> untuk detail & ganti foto dari HP kamu!<br>
+    ✏️ <strong>Hover kartu</strong> untuk edit judul atau hapus kartu.<br>
+    ➕ <strong>Tambah Kartu</strong> untuk menambah gambar baru di kategori aktif.
+  </div>
+
+  <div class="section-title">📂 Kategori <span class="fun-badge" id="totalBadge">0 Foto</span></div>
+
+  <div class="filter-area">
+    <div class="filter-tabs" id="filterTabs"></div>
+    <!-- Tambah Kategori Baru disembunyikan dari tampilan, tetap bisa diaktifkan lewat kode -->
+    <button class="btn-add-category" onclick="openAddCategoryModal()" style="display:none">＋ Tambah Kategori Baru</button>
+  </div>
+
+  <div class="image-grid" id="imageGrid">
+    <!-- kartu digenerasi JS -->
+  </div>
+
+  <a href="evaluasi.html" class="btn-primary" style="display:block;text-align:center;text-decoration:none;padding:16px 20px;">📝 Mulai Evaluasi →</a>
+</main>
+
+<!-- Lightbox -->
+<div class="lightbox" id="lightbox" onclick="closeLightOutside(event)">
+  <div class="lightbox-content">
+    <button class="lightbox-close" onclick="closeLight()">✕</button>
+    <div class="lightbox-img-wrap" id="lbImgWrap">
+      <span id="lbEmoji"></span>
+    </div>
+    <div class="lightbox-title" id="lbTitle"></div>
+    <div class="lightbox-desc" id="lbDesc"></div>
+    <button class="btn-reset-photo" id="btnReset" onclick="resetPhoto()">🗑️ Hapus Foto Saya</button>
+    <div class="btn-row-lb">
+      <a href="#" class="btn-outline-lb" onclick="triggerUploadFromLight(); return false;">📷 Ganti Foto</a>
+      <button class="btn-primary" onclick="closeLight()">Mengerti! 👍</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal: Tambah / Edit -->
+<div class="modal-overlay" id="modalOverlay">
+  <div class="modal-box">
+    <h3 id="modalTitle">Tambah Kartu Baru</h3>
+    <div class="modal-field">
+      <label>Emoji / Ikon</label>
+      <input type="text" id="mEmoji" placeholder="Contoh: 🏝️" maxlength="4">
+    </div>
+    <div class="modal-field">
+      <label>Judul</label>
+      <input type="text" id="mCardTitle" placeholder="Contoh: Pantai Raja Ampat">
+    </div>
+    <div class="modal-field">
+      <label>Deskripsi</label>
+      <textarea id="mCardDesc" placeholder="Tuliskan keterangan singkat..."></textarea>
+    </div>
+    <div class="modal-btns">
+      <button class="modal-btn-cancel" onclick="closeModal()">Batal</button>
+      <button class="modal-btn-ok" id="modalOkBtn" onclick="modalOk()">Simpan</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal: Tambah / Ubah Nama Kategori -->
+<div class="modal-overlay" id="modalCat">
+  <div class="modal-box">
+    <h3 id="modalCatTitle">Tambah Kategori Baru</h3>
+    <div class="modal-field">
+      <label>Emoji Kategori</label>
+      <input type="text" id="mCatEmoji" placeholder="Contoh: 🌴" maxlength="4">
+    </div>
+    <div class="modal-field">
+      <label>Nama Kategori</label>
+      <input type="text" id="mCatName" placeholder="Contoh: Lombok">
+    </div>
+    <div class="modal-field">
+      <label>Label Badge (singkat)</label>
+      <input type="text" id="mCatLabel" placeholder="Contoh: NTB" maxlength="12">
+    </div>
+    <div class="modal-btns">
+      <button class="modal-btn-cancel" onclick="closeModalCat()">Batal</button>
+      <button class="modal-btn-ok" id="modalCatOkBtn" onclick="modalCatOk()">Simpan</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<div class="bottom-nav">
+  <a class="nav-item" href="index.html"><span class="nav-icon">🏠</span>Beranda</a>
+  <a class="nav-item" href="menu.html"><span class="nav-icon">📋</span>Menu</a>
+  <a class="nav-item active" href="gambar.html"><span class="nav-icon">🖼️</span>Gambar</a>
+  <a class="nav-item" href="evaluasi.html"><span class="nav-icon">📝</span>Evaluasi</a>
+  <a class="nav-item" href="materi.html"><span class="nav-icon">📚</span>Materi</a>
+</div>
+
+<script>
+// ============================================================
+//  DATA KATEGORI DEFAULT
+// ============================================================
+// ============================================================
+//  WARNA LABEL PER KARTU
+//  Ganti warna label tiap kartu dengan mengisi 'labelColor' di kartu
+//  Contoh: labelColor: '#E63946'
+// ============================================================
+const LABEL_COLORS = [
+  '#7B2FBE', // ungu
+  '#FF6B35', // oranye
+  '#2DC653', // hijau
+  '#E63946', // merah
+  '#457B9D', // biru
+  '#FF9F1C', // kuning-oranye
+  '#6c63ff', // indigo
+  '#ff6584', // pink
+  '#00b4d8', // cyan
+  '#43aa8b', // teal
+];
+
+// ============================================================
+//  DATA KATEGORI DEFAULT
+//
+//  Setiap kategori memiliki 6 kartu:
+//  Baju Adat · Makanan · Alat Musik · Rumah Adat · Tarian · Peninggalan
+//
+//  CARA MENGUBAH LABEL BADGE:
+//    label: 'TEKS_LABEL'         → teks pada badge pojok kanan atas
+//    labelColor: '#HEXWARNA'     → warna latar badge
+//
+//  CARA MENAMBAH GAMBAR LANGSUNG DI KODE:
+//    image: 'https://...'        → isi URL gambar
+//    image: 'data:image/...'     → atau base64
+//    Biarkan kosong ('')  jika belum ingin pasang gambar.
+// ============================================================
+const defaultCategories = {
+
+  // ─────────────────────────────────────────────────────────
+  //  YOGYAKARTA
+  // ─────────────────────────────────────────────────────────
+  yogyakarta: {
+    label: 'YOGYAKARTA', emoji: '🏰', name: 'Yogyakarta',
+    cards: [
+      {
+        emoji:'👗', title:'Baju Adat Yogyakarta',
+        desc:'Beskap untuk pria dan kebaya untuk wanita. Pakaian Keprabon digunakan oleh Sultan.',
+        label: 'BAJU ADAT', labelColor: '#E63946', image: ''
+      },
+      {
+        emoji:'🍲', title:'Gudeg Khas Yogyakarta',
+        desc:'Makanan khas nangka muda dimasak dengan santan dan gula merah hingga berwarna cokelat.',
+        label: 'MAKANAN', labelColor: '#FF9F1C', image: ''
+      },
+      {
+        emoji:'🎶', title:'Gamelan Jawa',
+        desc:'Ansambel musik tradisional Jawa yang terdiri dari gong, kendang, saron, dan bonang.',
+        label: 'ALAT MUSIK', labelColor: '#2DC653', image: ''
+      },
+      {
+        emoji:'🏯', title:'Bangsal Kencono',
+        desc:'Bangunan utama Keraton Yogyakarta tempat upacara kerajaan berlangsung.',
+        label: 'RUMAH ADAT', labelColor: '#457B9D', image: ''
+      },
+      {
+        emoji:'💃', title:'Tari Bedhaya Ketawang',
+        desc:'Tarian sakral Keraton Yogyakarta yang hanya dipentaskan pada acara kebesaran Sultan.',
+        label: 'TARIAN', labelColor: '#7B2FBE', image: ''
+      },
+      {
+        emoji:'🏰', title:'Candi Prambanan',
+        desc:'Candi Hindu terbesar di dunia yang dibangun pada abad ke-9, Situs Warisan Dunia UNESCO.',
+        label: 'PENINGGALAN', labelColor: '#6c63ff', image: ''
+      }
+    ]
+  },
+
+  // ─────────────────────────────────────────────────────────
+  //  KALIMANTAN
+  // ─────────────────────────────────────────────────────────
+  kalimantan: {
+    label: 'KALIMANTAN', emoji: '🌿', name: 'Kalimantan',
+    cards: [
+      {
+        emoji:'🌺', title:'Baju Adat Dayak',
+        desc:'Pakaian adat suku Dayak dihiasi manik-manik dan bulu burung enggang sebagai simbol kebanggaan.',
+        label: 'BAJU ADAT', labelColor: '#E63946', image: ''
+      },
+      {
+        emoji:'🍜', title:'Soto Banjar',
+        desc:'Soto khas Kalimantan Selatan dengan kuah bening rempah dan perkedel kentang.',
+        label: 'MAKANAN', labelColor: '#FF9F1C', image: ''
+      },
+      {
+        emoji:'🎸', title:'Sape',
+        desc:'Alat musik petik tradisional suku Dayak Kenyah, terbuat dari kayu dengan dawai rotan.',
+        label: 'ALAT MUSIK', labelColor: '#2DC653', image: ''
+      },
+      {
+        emoji:'🏠', title:'Rumah Betang',
+        desc:'Rumah panjang khas Dayak yang dihuni banyak keluarga, melambangkan kebersamaan.',
+        label: 'RUMAH ADAT', labelColor: '#457B9D', image: ''
+      },
+      {
+        emoji:'🦅', title:'Tari Kancet Ledo',
+        desc:'Tarian gadis Dayak Kenyah yang lemah lembut, menggunakan bulu ekor burung enggang.',
+        label: 'TARIAN', labelColor: '#7B2FBE', image: ''
+      },
+      {
+        emoji:'⚔️', title:'Keraton Kesultanan Pontianak',
+        desc:'Keraton bersejarah peninggalan Kesultanan Pontianak yang berdiri sejak tahun 1771.',
+        label: 'PENINGGALAN', labelColor: '#6c63ff', image: ''
+      }
+    ]
+  },
+
+  // ─────────────────────────────────────────────────────────
+  //  BALI
+  // ─────────────────────────────────────────────────────────
+  bali: {
+    label: 'BALI', emoji: '🌺', name: 'Bali',
+    cards: [
+      {
+        emoji:'👘', title:'Pakaian Adat Bali',
+        desc:'Udeng untuk pria dan kebaya dengan kamen (kain batik) untuk wanita, dipakai saat upacara.',
+        label: 'BAJU ADAT', labelColor: '#E63946', image: ''
+      },
+      {
+        emoji:'🐷', title:'Babi Guling',
+        desc:'Makanan khas Bali berupa babi panggang utuh yang dibumbui rempah khas Bali.',
+        label: 'MAKANAN', labelColor: '#FF9F1C', image: ''
+      },
+      {
+        emoji:'🎵', title:'Gamelan Bali',
+        desc:'Alat musik perkusi khas Bali yang dimainkan dalam upacara adat dan pertunjukan tari.',
+        label: 'ALAT MUSIK', labelColor: '#2DC653', image: ''
+      },
+      {
+        emoji:'🏡', title:'Rumah Adat Bali (Umah)',
+        desc:'Rumah tradisional Bali dengan pura keluarga dan tata letak berdasarkan arah mata angin.',
+        label: 'RUMAH ADAT', labelColor: '#457B9D', image: ''
+      },
+      {
+        emoji:'🔥', title:'Tari Kecak',
+        desc:'Tarian kolosal Bali yang menggambarkan kisah Ramayana, dibawakan puluhan penari pria.',
+        label: 'TARIAN', labelColor: '#7B2FBE', image: ''
+      },
+      {
+        emoji:'🛕', title:'Pura Besakih',
+        desc:'Pura terbesar dan paling suci di Bali yang terletak di lereng Gunung Agung, dibangun abad ke-10.',
+        label: 'PENINGGALAN', labelColor: '#6c63ff', image: ''
+      }
+    ]
+  },
+
+  // ─────────────────────────────────────────────────────────
+  //  PAPUA
+  // ─────────────────────────────────────────────────────────
+  papua: {
+    label: 'PAPUA', emoji: '🦜', name: 'Papua',
+    cards: [
+      {
+        emoji:'🌿', title:'Baju Adat Papua',
+        desc:'Koteka untuk pria dan rok rumbai untuk wanita, terbuat dari bahan alam khas Papua.',
+        label: 'BAJU ADAT', labelColor: '#E63946', image: ''
+      },
+      {
+        emoji:'🍚', title:'Papeda',
+        desc:'Makanan pokok Papua berupa bubur sagu kental yang dimakan dengan ikan kuah kuning.',
+        label: 'MAKANAN', labelColor: '#FF9F1C', image: ''
+      },
+      {
+        emoji:'🥁', title:'Tifa',
+        desc:'Alat musik pukul khas Papua dan Maluku, terbuat dari kayu dan kulit binatang.',
+        label: 'ALAT MUSIK', labelColor: '#2DC653', image: ''
+      },
+      {
+        emoji:'🏘️', title:'Rumah Honai',
+        desc:'Rumah bulat khas suku Dani Papua dengan atap jerami berbentuk jamur, hangat dan kuat.',
+        label: 'RUMAH ADAT', labelColor: '#457B9D', image: ''
+      },
+      {
+        emoji:'🎉', title:'Tari Sajojo',
+        desc:'Tarian adat Papua yang ceria dan energik, biasa dibawakan saat perayaan dan penyambutan.',
+        label: 'TARIAN', labelColor: '#7B2FBE', image: ''
+      },
+      {
+        emoji:'🦅', title:'Tugu Burung Cenderawasih',
+        desc:'Simbol dan peninggalan budaya Papua. Burung surga yang dilindungi dan menjadi kebanggaan Papua.',
+        label: 'PENINGGALAN', labelColor: '#6c63ff', image: ''
+      }
+    ]
+  },
+
+  // ─────────────────────────────────────────────────────────
+  //  SULAWESI SELATAN
+  // ─────────────────────────────────────────────────────────
+  sulawesi: {
+    label: 'SULSEL', emoji: '⚓', name: 'Sulawesi Selatan',
+    cards: [
+      {
+        emoji:'👙', title:'Baju Bodo',
+        desc:'Baju adat perempuan Bugis-Makassar berbentuk segi empat longgar dari kain tipis berwarna cerah.',
+        label: 'BAJU ADAT', labelColor: '#E63946', image: ''
+      },
+      {
+        emoji:'🥣', title:'Coto Makassar',
+        desc:'Sup daging sapi dan jeroan khas Makassar dengan bumbu rempah kacang yang kuat.',
+        label: 'MAKANAN', labelColor: '#FF9F1C', image: ''
+      },
+      {
+        emoji:'🎻', title:'Kecapi Bugis',
+        desc:'Alat musik petik tradisional Bugis yang dimainkan sebagai pengiring lagu dan syair.',
+        label: 'ALAT MUSIK', labelColor: '#2DC653', image: ''
+      },
+      {
+        emoji:'🏠', title:'Rumah Adat Tongkonan',
+        desc:'Rumah adat Toraja dengan atap melengkung seperti tanduk kerbau, dihiasi ukiran bermakna.',
+        label: 'RUMAH ADAT', labelColor: '#457B9D', image: ''
+      },
+      {
+        emoji:'💃', title:'Tari Pakarena',
+        desc:'Tarian tradisional perempuan Makassar yang lemah lembut, menggunakan kipas dan sutera.',
+        label: 'TARIAN', labelColor: '#7B2FBE', image: ''
+      },
+      {
+        emoji:'🏰', title:'Benteng Rotterdam',
+        desc:'Benteng bersejarah peninggalan Kerajaan Gowa yang dibangun abad ke-16 di Makassar.',
+        label: 'PENINGGALAN', labelColor: '#6c63ff', image: ''
+      }
+    ]
+  },
+
+  // ─────────────────────────────────────────────────────────
+  //  SUMATRA BARAT
+  // ─────────────────────────────────────────────────────────
+  sumatra: {
+    label: 'SUMBAR', emoji: '🏔️', name: 'Sumatra Barat',
+    cards: [
+      {
+        emoji:'🪭', title:'Baju Adat Minangkabau',
+        desc:'Pakaian adat Minang dengan suntiang (hiasan kepala) untuk pengantin wanita yang megah.',
+        label: 'BAJU ADAT', labelColor: '#E63946', image: ''
+      },
+      {
+        emoji:'🍖', title:'Rendang',
+        desc:'Masakan daging sapi berbumbu rempah khas Minangkabau, diakui sebagai makanan terenak dunia.',
+        label: 'MAKANAN', labelColor: '#FF9F1C', image: ''
+      },
+      {
+        emoji:'🪗', title:'Saluang',
+        desc:'Alat musik tiup tradisional Minangkabau dari bambu, dimainkan dengan teknik pernapasan khusus.',
+        label: 'ALAT MUSIK', labelColor: '#2DC653', image: ''
+      },
+      {
+        emoji:'🏡', title:'Rumah Gadang',
+        desc:'Rumah adat Minangkabau dengan atap melengkung seperti tanduk kerbau, simbol matrilineal.',
+        label: 'RUMAH ADAT', labelColor: '#457B9D', image: ''
+      },
+      {
+        emoji:'🪔', title:'Tari Piring',
+        desc:'Tarian tradisional Minang dengan piring di tangan yang berputar cepat tanpa jatuh.',
+        label: 'TARIAN', labelColor: '#7B2FBE', image: ''
+      },
+      {
+        emoji:'🕰️', title:'Jam Gadang',
+        desc:'Menara jam ikonik peninggalan Belanda di pusat Kota Bukittinggi, dibangun tahun 1926.',
+        label: 'PENINGGALAN', labelColor: '#6c63ff', image: ''
+      }
+    ]
+  }
+};
+
+// ============================================================
+//  STATE
+// ============================================================
+const STORE_PHOTO  = 'galeri_foto_';
+const STORE_DATA   = 'galeri_data_v3';
+const STORE_ORDER  = 'galeri_order_v3';
+
+let categories    = {};     // { key: { label, emoji, name, cards:[{emoji,title,desc,label?,labelColor?,image?}] } }
+let catOrder      = [];     // array of category keys in order
+let currentCat    = '';
+let currentLightId = null;
+let globalCardIndex = 0;
+let cardDataMap   = {};     // { id: { cat, catIndex, cardData } } — map global id ke data kartu
+
+// modal state
+let modalMode = '';   // 'add-card' | 'edit-card'
+let modalEditId = null;
+let modalCatMode = ''; // 'add-cat' | 'edit-cat'
+let modalEditCatKey = '';
+
+// ============================================================
+//  PERSISTENCE
+// ============================================================
+function loadData() {
+  try {
+    const raw = localStorage.getItem(STORE_DATA);
+    const ord = localStorage.getItem(STORE_ORDER);
+    if (raw) {
+      categories = JSON.parse(raw);
+      catOrder   = ord ? JSON.parse(ord) : Object.keys(categories);
+    } else {
+      categories = JSON.parse(JSON.stringify(defaultCategories));
+      catOrder   = Object.keys(categories);
+    }
+  } catch(e) {
+    categories = JSON.parse(JSON.stringify(defaultCategories));
+    catOrder   = Object.keys(categories);
+  }
+}
+
+function saveData() {
+  try {
+    localStorage.setItem(STORE_DATA, JSON.stringify(categories));
+    localStorage.setItem(STORE_ORDER, JSON.stringify(catOrder));
+  } catch(e) { showToast('⚠️ Penyimpanan penuh.'); }
+}
+
+function getSaved(id)        { try { return localStorage.getItem(STORE_PHOTO+id); } catch(e) { return null; } }
+function setSaved(id, val)   { try { localStorage.setItem(STORE_PHOTO+id, val); } catch(e) { showToast('⚠️ Penyimpanan penuh, foto tidak tersimpan.'); } }
+function removeSaved(id)     { try { localStorage.removeItem(STORE_PHOTO+id); } catch(e) {} }
+
+// ============================================================
+//  BUILD TABS
+// ============================================================
+function buildTabs() {
+  const container = document.getElementById('filterTabs');
+  container.innerHTML = '';
+  catOrder.forEach(key => {
+    const cat = categories[key];
+    if (!cat) return;
+    const btn = document.createElement('button');
+    btn.className = 'tab-btn' + (key === currentCat ? ' active' : '');
+    btn.dataset.cat = key;
+    btn.innerHTML = `${cat.emoji} ${cat.name}
+      <span class="tab-edit-btn" title="Ubah nama" onclick="openEditCategoryModal('${key}',event)">✏️</span>`;
+    btn.addEventListener('click', (e) => {
+      if (e.target.classList.contains('tab-edit-btn')) return;
+      filterCards(key, btn);
+    });
+    container.appendChild(btn);
+  });
+}
+
+// ============================================================
+//  BUILD GRID
+// ============================================================
+function generateCards() {
+  const grid = document.getElementById('imageGrid');
+  grid.innerHTML = '';
+  globalCardIndex = 0;
+  cardDataMap = {};   // reset peta kartu
+
+  catOrder.forEach(cat => {
+    const catData = categories[cat];
+    if (!catData) return;
+    catData.cards.forEach((cardData, i) => {
+      const id = globalCardIndex++;
+      cardDataMap[id] = { cat, catIndex: i, cardData };   // simpan peta id → data
+      grid.insertAdjacentHTML('beforeend', createCardHtml(cat, id, cardData, i));
+    });
+  });
+
+  // Add-card tile (always last in grid, shown when category is active)
+  const tile = document.createElement('div');
+  tile.className = 'add-card-tile';
+  tile.id = 'addCardTile';
+  tile.innerHTML = '<span class="plus">＋</span><span class="plus-label">Tambah Kartu Baru</span>';
+  tile.onclick = () => openAddCardModal();
+  grid.appendChild(tile);
+
+  updateTotalBadge();
+}
+
+function createCardHtml(cat, id, cardData, catIndex) {
+  // Label badge: pakai label kartu jika ada, fallback ke label kategori
+  const cardLabel = cardData.label || categories[cat].label;
+  // Warna badge: pakai labelColor kartu jika ada, fallback ke palet otomatis
+  const cardLabelColor = cardData.labelColor || LABEL_COLORS[id % LABEL_COLORS.length];
+  return `
+    <div class="image-card" data-cat="${cat}" data-id="${id}" data-cat-index="${catIndex}">
+      <div class="img-wrap" onclick="openLight(${id})">
+        <span class="emoji-ph">${cardData.emoji}</span>
+        <img class="custom-photo" src="" alt="${cardData.title}" id="img${id}">
+        <span class="img-label" style="background:${cardLabelColor}">${cardLabel}</span>
+        <button class="btn-del-card" title="Hapus kartu" onclick="deleteCard(event,${id})">✕</button>
+      </div>
+      <input class="file-input" type="file" accept="image/*" id="f${id}" onchange="handleUpload(${id},this)">
+      <div class="card-info">
+        <div class="card-title">
+          <span class="card-title-text">${cardData.title}</span>
+          <button class="title-edit-btn" onclick="openEditCardModal(event,${id})">✏️ Edit</button>
+        </div>
+        <div class="card-desc">${cardData.desc}</div>
+      </div>
+    </div>
+  `;
+}
+
+function updateTotalBadge() {
+  const total = catOrder.reduce((s, k) => s + (categories[k]?.cards.length || 0), 0);
+  document.getElementById('totalBadge').textContent = `${total} Foto`;
+}
+
+// ============================================================
+//  FILTER
+// ============================================================
+function filterCards(cat, btn) {
+  currentCat = cat;
+
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  if (btn) btn.classList.add('active');
+
+  document.querySelectorAll('.image-card').forEach(card => card.classList.remove('show'));
+
+  const matching = document.querySelectorAll(`.image-card[data-cat="${cat}"]`);
+  matching.forEach((card, i) => {
+    setTimeout(() => {
+      card.classList.add('show');
+      card.style.animation = 'fadeIn 0.4s ease both';
+    }, i * 60);
+  });
+
+  // Show add-card tile
+  const tile = document.getElementById('addCardTile');
+  if (tile) {
+    tile.classList.add('show');
+    // Place tile right after last card of this category in the DOM
+    const last = [...matching].pop();
+    if (last) last.after(tile);
+  }
+
+  showToast(`📂 ${categories[cat]?.cards.length || 0} foto · ${categories[cat]?.name}`);
+}
+// ============================================================
+//  ADD / EDIT CARD MODAL
+// ============================================================
+function openAddCardModal() {
+  modalMode = 'add-card';
+  modalEditId = null;
+  document.getElementById('modalTitle').textContent = '➕ Tambah Kartu Baru';
+  document.getElementById('mEmoji').value = '🖼️';
+  document.getElementById('mCardTitle').value = '';
+  document.getElementById('mCardDesc').value = '';
+  document.getElementById('modalOkBtn').textContent = 'Tambahkan';
+  document.getElementById('modalOverlay').classList.add('open');
+}
+
+function openEditCardModal(e, id) {
+  e.stopPropagation();
+  modalMode = 'edit-card';
+  modalEditId = id;
+  const card = document.querySelector(`[data-id="${id}"]`);
+  const cat = card.dataset.cat;
+  const idx = parseInt(card.dataset.catIndex);
+  const data = categories[cat].cards[idx];
+
+  document.getElementById('modalTitle').textContent = '✏️ Edit Kartu';
+  document.getElementById('mEmoji').value = data.emoji;
+  document.getElementById('mCardTitle').value = data.title;
+  document.getElementById('mCardDesc').value = data.desc;
+  document.getElementById('modalOkBtn').textContent = 'Simpan Perubahan';
+  document.getElementById('modalOverlay').classList.add('open');
+}
+
+function closeModal() { document.getElementById('modalOverlay').classList.remove('open'); }
+
+function modalOk() {
+  const emoji = document.getElementById('mEmoji').value.trim() || '🖼️';
+  const title = document.getElementById('mCardTitle').value.trim();
+  const desc  = document.getElementById('mCardDesc').value.trim();
+  if (!title) { showToast('⚠️ Judul tidak boleh kosong!'); return; }
+
+  if (modalMode === 'add-card') {
+    if (!currentCat) { showToast('⚠️ Pilih kategori terlebih dahulu!'); return; }
+    categories[currentCat].cards.push({ emoji, title, desc });
+    showToast('✅ Kartu berhasil ditambahkan!');
+  } else if (modalMode === 'edit-card') {
+    const card = document.querySelector(`[data-id="${modalEditId}"]`);
+    const cat = card.dataset.cat;
+    const idx = parseInt(card.dataset.catIndex);
+    categories[cat].cards[idx] = { emoji, title, desc };
+    showToast('✅ Kartu berhasil diperbarui!');
+  }
+
+  saveData();
+  closeModal();
+  rebuildAll();
+}
+
+// ============================================================
+//  DELETE CARD
+// ============================================================
+function deleteCard(e, id) {
+  e.stopPropagation();
+  if (!confirm('Hapus kartu ini?')) return;
+  const card = document.querySelector(`[data-id="${id}"]`);
+  const cat  = card.dataset.cat;
+  const idx  = parseInt(card.dataset.catIndex);
+  categories[cat].cards.splice(idx, 1);
+  removeSaved(id);
+  saveData();
+  rebuildAll();
+  showToast('🗑️ Kartu dihapus.');
+}
+
+// ============================================================
+//  ADD / EDIT CATEGORY MODAL
+// ============================================================
+function openAddCategoryModal() {
+  modalCatMode = 'add-cat';
+  modalEditCatKey = '';
+  document.getElementById('modalCatTitle').textContent = '➕ Tambah Kategori Baru';
+  document.getElementById('mCatEmoji').value = '🗺️';
+  document.getElementById('mCatName').value = '';
+  document.getElementById('mCatLabel').value = '';
+  document.getElementById('modalCatOkBtn').textContent = 'Tambahkan';
+  document.getElementById('modalCat').classList.add('open');
+}
+
+function openEditCategoryModal(key, e) {
+  e.stopPropagation();
+  modalCatMode = 'edit-cat';
+  modalEditCatKey = key;
+  const cat = categories[key];
+  document.getElementById('modalCatTitle').textContent = '✏️ Ubah Nama Kategori';
+  document.getElementById('mCatEmoji').value = cat.emoji;
+  document.getElementById('mCatName').value = cat.name;
+  document.getElementById('mCatLabel').value = cat.label;
+  document.getElementById('modalCatOkBtn').textContent = 'Simpan Perubahan';
+  document.getElementById('modalCat').classList.add('open');
+}
+
+function closeModalCat() { document.getElementById('modalCat').classList.remove('open'); }
+
+function modalCatOk() {
+  const emoji = document.getElementById('mCatEmoji').value.trim() || '🗺️';
+  const name  = document.getElementById('mCatName').value.trim();
+  const label = document.getElementById('mCatLabel').value.trim().toUpperCase();
+  if (!name) { showToast('⚠️ Nama kategori tidak boleh kosong!'); return; }
+
+  if (modalCatMode === 'add-cat') {
+    // Buat key unik dari nama
+    let key = name.toLowerCase().replace(/\s+/g,'_').replace(/[^a-z0-9_]/g,'') + '_' + Date.now();
+    categories[key] = { label: label || name.toUpperCase().slice(0,8), emoji, name, cards: [] };
+    catOrder.push(key);
+    showToast('✅ Kategori baru ditambahkan!');
+    saveData();
+    rebuildAll();
+    filterCards(key, null);
+    // highlight new tab
+    setTimeout(() => {
+      const newBtn = document.querySelector(`[data-cat="${key}"]`);
+      if (newBtn) newBtn.classList.add('active');
+    }, 100);
+  } else {
+    const key = modalEditCatKey;
+    categories[key].emoji = emoji;
+    categories[key].name  = name;
+    categories[key].label = label || name.toUpperCase().slice(0,8);
+    // Update all img-label in existing cards
+    document.querySelectorAll(`.image-card[data-cat="${key}"] .img-label`).forEach(el => {
+      el.textContent = categories[key].label;
+    });
+    showToast('✅ Nama kategori diperbarui!');
+    saveData();
+    buildTabs();
+    // re-highlight current tab
+    const btn = document.querySelector(`[data-cat="${key}"]`);
+    if (btn && currentCat === key) btn.classList.add('active');
+  }
+
+  closeModalCat();
+}
+
+// ============================================================
+//  REBUILD ALL
+// ============================================================
+function rebuildAll() {
+  const prevCat = currentCat;
+  generateCards();
+  buildTabs();
+  loadSavedPhotos();
+  if (prevCat && categories[prevCat]) {
+    const btn = document.querySelector(`[data-cat="${prevCat}"]`);
+    filterCards(prevCat, btn);
+  } else if (catOrder.length) {
+    const firstKey = catOrder[0];
+    const btn = document.querySelector(`[data-cat="${firstKey}"]`);
+    filterCards(firstKey, btn);
+  }
+}
+
+// ============================================================
+//  PHOTO UPLOAD
+// ============================================================
+function handleUpload(id, input) {
+  const file = input.files[0];
+  if (!file) return;
+  if (file.size > 5 * 1024 * 1024) { showToast('⚠️ Foto terlalu besar (maks 5MB)'); return; }
+
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    const dataUrl = e.target.result;
+    setSaved(id, dataUrl);
+    applyPhoto(id, dataUrl);
+    showToast('✅ Foto berhasil diganti!');
+    if (currentLightId === id) refreshLightboxImage(id);
+  };
+  reader.readAsDataURL(file);
+  input.value = '';
+}
+
+function applyPhoto(id, dataUrl) {
+  const img   = document.getElementById('img'+id);
+  const emoji = document.querySelector(`[data-id="${id}"] .emoji-ph`);
+  if (img)   { img.src = dataUrl; img.classList.add('show'); }
+  if (emoji) emoji.style.display = 'none';
+}
+
+// Terapkan gambar yang sudah di-embed di kode (image di kartu), tanpa menyimpan ke localStorage
+function applyCodeImage(id, url) {
+  const img   = document.getElementById('img'+id);
+  const emoji = document.querySelector(`[data-id="${id}"] .emoji-ph`);
+  if (img)   { img.src = url; img.classList.add('show'); }
+  if (emoji) emoji.style.display = 'none';
+}
+
+function loadSavedPhotos() {
+  for (let id = 0; id < globalCardIndex; id++) {
+    const saved = getSaved(id);
+    if (saved) {
+      // Prioritas 1: foto yang di-upload pengguna
+      applyPhoto(id, saved);
+    } else {
+      // Prioritas 2: gambar yang di-embed di kode via field 'image'
+      const info = cardDataMap[id];
+      if (info && info.cardData.image) {
+        applyCodeImage(id, info.cardData.image);
+      }
+    }
+  }
+}
+
+function resetPhoto() {
+  const id  = currentLightId;
+  removeSaved(id);
+
+  // Setelah hapus upload, cek apakah ada gambar dari kode
+  const info = cardDataMap[id];
+  if (info && info.cardData.image) {
+    applyCodeImage(id, info.cardData.image);
+  } else {
+    const img   = document.getElementById('img'+id);
+    const emoji = document.querySelector(`[data-id="${id}"] .emoji-ph`);
+    if (img)   { img.src = ''; img.classList.remove('show'); }
+    if (emoji) emoji.style.display = 'block';
+  }
+
+  refreshLightboxImage(id);
+  showToast('🗑️ Foto dihapus.');
+}
+
+// ============================================================
+//  LIGHTBOX
+// ============================================================
+function openLight(id) {
+  currentLightId = id;
+  const card     = document.querySelector(`[data-id="${id}"]`);
+  const catIndex = parseInt(card.dataset.catIndex);
+  const cat      = card.dataset.cat;
+  const cardData = categories[cat].cards[catIndex];
+  document.getElementById('lbTitle').textContent = cardData.title;
+  document.getElementById('lbDesc').textContent  = cardData.desc;
+  refreshLightboxImage(id);
+  document.getElementById('lightbox').classList.add('open');
+}
+
+function refreshLightboxImage(id) {
+  const wrap   = document.getElementById('lbImgWrap');
+  const emojiEl = document.getElementById('lbEmoji');
+  const old    = wrap.querySelector('img.lb-photo');
+  if (old) old.remove();
+
+  const saved    = getSaved(id);
+  const info     = cardDataMap[id];
+  const codeImg  = info?.cardData?.image || '';
+
+  if (saved || codeImg) {
+    emojiEl.style.display = 'none';
+    const img = document.createElement('img');
+    img.src = saved || codeImg;
+    img.className = 'lb-photo';
+    wrap.appendChild(img);
+    // Tampilkan tombol hapus hanya kalau foto berasal dari upload (bukan kode)
+    if (saved) document.getElementById('btnReset').classList.add('visible');
+    else       document.getElementById('btnReset').classList.remove('visible');
+  } else {
+    const card = document.querySelector(`[data-id="${id}"]`);
+    const idx  = parseInt(card.dataset.catIndex);
+    emojiEl.textContent   = categories[card.dataset.cat].cards[idx].emoji;
+    emojiEl.style.display = 'block';
+    document.getElementById('btnReset').classList.remove('visible');
+  }
+}
+
+function triggerUploadFromLight() {
+  if (currentLightId === null) return;
+  document.getElementById('f'+currentLightId)?.click();
+}
+
+function closeLight()          { document.getElementById('lightbox').classList.remove('open'); }
+function closeLightOutside(e)  { if (e.target.id === 'lightbox') closeLight(); }
+
+// ============================================================
+//  TOAST
+// ============================================================
+let toastTimer;
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.classList.remove('show'), 2500);
+}
+
+// ============================================================
+//  INIT
+// ============================================================
+window.addEventListener('DOMContentLoaded', () => {
+  loadData();
+  generateCards();
+  buildTabs();
+  loadSavedPhotos();
+
+  // Show first category
+  setTimeout(() => {
+    const firstKey = catOrder[0];
+    if (firstKey) {
+      const btn = document.querySelector(`[data-cat="${firstKey}"]`);
+      filterCards(firstKey, btn);
+    }
+  }, 50);
+});
+</script>
+</body>
+</html>

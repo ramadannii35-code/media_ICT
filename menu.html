@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Menu</title>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;800;900&family=Baloo+2:wght@700;800&display=swap" rel="stylesheet"/>
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    :root{
+      --merah:#E63946;--biru-tua:#1D3557;--biru:#457B9D;
+      --kuning:#FFD60A;--hijau:#2DC653;--oranye:#FF9F1C;--ungu:#7B2D8B;--ungu-muda:#C084FC;
+      --pink:#E91E63;--pink-muda:#F8BBD9;}
+    body{
+      min-height:100vh;font-family:'Nunito',sans-serif;
+      background:linear-gradient(160deg,#0f2942 0%,#1D3557 40%,#2a5f8f 100%);
+      display:flex;flex-direction:column;align-items:center;
+      padding:40px 20px;position:relative;overflow-x:hidden;}
+
+    /* pelangi top border */
+    .top-border{
+      position:fixed;top:0;left:0;right:0;height:8px;
+      background:repeating-linear-gradient(90deg,
+        var(--merah) 0 14%,var(--kuning) 14% 28%,
+        var(--hijau) 28% 42%,var(--biru)  42% 56%,
+        var(--oranye) 56% 70%,var(--ungu) 70% 84%,var(--pink) 84% 100%);z-index:100;}
+
+    /* Back button */
+    .back-btn{position:fixed;top:20px;left:20px;z-index:99;background:rgba(255,255,255,.15);backdrop-filter:blur(8px);color:#fff;border:2px solid rgba(255,255,255,.3);border-radius:50px;padding:8px 18px;font-weight:700;font-size:.9rem;cursor:pointer;text-decoration:none;transition:all .2s;display:flex;align-items:center;gap:6px;}
+    .back-btn:hover{background:rgba(255,255,255,.25);}
+
+    /* Header */
+    .header{text-align:center;margin:30px 0 40px;animation:fadeDown .7s ease both;position:relative;}
+    @keyframes fadeDown{from{opacity:0;transform:translateY(-30px)}to{opacity:1;transform:translateY(0)}}
+    .header-icon{font-size:60px;margin-bottom:10px;display:block;}
+    .header h1{font-family:'Baloo 2',cursive;font-size:clamp(1.8rem,5vw,2.6rem);color:#fff;margin-bottom:6px;}
+    .header h1 em{color:var(--kuning);font-style:normal;}
+    .header p{color:rgba(255,255,255,.7);font-size:.95rem;}
+    
+    /* Background image */
+    .header-bg{position:absolute;top:-20px;left:50%;transform:translateX(-50%);width:300px;height:200px;opacity:.05;z-index:1;}
+    .header-bg img{width:100%;height:100%;object-fit:cover;}
+
+    /* Progress bar */
+    .progress-bar{width:100%;max-width:600px;background:rgba(255,255,255,.15);border-radius:50px;height:8px;margin-bottom:40px;overflow:hidden;}
+    .progress-fill{height:100%;border-radius:50px;background:linear-gradient(90deg,var(--kuning),var(--oranye));width:25%;transition:width 1s;}
+
+    /* GRID MENUBIAR SEJAJAR */
+    .menu-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:24px;max-width:1000px;width:100%;}
+
+    /* CARD */
+    .menu-card{background:rgba(255,255,255,.93);border-radius:24px;padding:36px 28px; text-align:center;cursor:pointer;text-decoration:none;display:block; box-shadow:0 12px 40px rgba(0,0,0,.25);transition:transform .25s cubic-bezier(.34,1.56,.64,1),box-shadow .25s;position:relative;overflow:hidden;animation:cardIn .6s cubic-bezier(.34,1.56,.64,1) both;}
+    .menu-card:nth-child(1){animation-delay:.1s;}
+    .menu-card:nth-child(2){animation-delay:.2s;}
+    .menu-card:nth-child(3){animation-delay:.3s;}
+    .menu-card:nth-child(4){animation-delay:.4s;}
+    .menu-card:nth-child(5){animation-delay:.5s;}
+
+    @keyframes cardIn{from{opacity:0;transform:translateY(40px) scale(.9)}to{opacity:1;transform:translateY(0) scale(1)}}
+    .menu-card::before{content:'';position:absolute;top:0;left:0;right:0;height:6px;}
+    .card-cp::before{background:linear-gradient(90deg,var(--biru),#6ec6f5);}
+    .card-tp::before{background:linear-gradient(90deg,var(--hijau),#a8f0b8);}
+    .card-materi::before{background:linear-gradient(90deg,var(--oranye),#ffd580);}
+    .card-evaluasi::before{background:linear-gradient(90deg,var(--ungu),var(--ungu-muda));}
+    .card-gambar::before{background:linear-gradient(90deg,var(--pink),var(--pink-muda));}
+    .menu-card:hover{transform:translateY(-8px) scale(1.03);box-shadow:0 20px 55px rgba(0,0,0,.3);}
+    .card-emoji{font-size:56px;margin-bottom:14px;display:block;transition:transform .3s;}
+    .menu-card:hover .card-emoji{transform:scale(1.15) rotate(-5deg);}
+    .card-label{font-family:'Baloo 2',cursive;font-size:1.5rem;font-weight:800;margin-bottom:8px;}
+    .card-cp .card-label{color:var(--biru);}
+    .card-tp .card-label{color:#1a8a3b;}
+    .card-materi .card-label{color:#c47a00;}
+    .card-evaluasi .card-label{color:var(--ungu);}
+    .card-gambar .card-label{color:var(--pink);}
+    .card-desc{font-size:.88rem;color:#666;line-height:1.5;}
+
+    /* Tag badge */
+    .card-tag{display:inline-block;margin-top:16px;padding:5px 16px;border-radius:50px;font-size:.78rem;font-weight:700;color:#fff;}
+    .card-cp .card-tag{background:var(--biru);}
+    .card-tp .card-tag{background:var(--hijau);}
+    .card-materi .card-tag{background:var(--oranye);}
+    .card-evaluasi .card-tag{background:var(--ungu);}
+    .card-gambar .card-tag{background:var(--pink);}
+
+    /* Info strip */
+    .info-strip{display:flex;align-items:center;justify-content:center;gap:20px;flex-wrap:wrap;margin-top:36px;max-width:600px;background:rgba(255,255,255,.1);border-radius:16px;padding:16px 24px;color:rgba(255,255,255,.85);font-size:.85rem; }
+    .info-strip span{display:flex;align-items:center;gap:6px;}
+
+    /* Floating deco */
+    .deco{position:fixed;font-size:40px;opacity:.06;pointer-events:none;animation:deco-float 8s ease-in-out infinite;}
+    .d1{top:10%;left:2%;animation-delay:0s;}
+    .d2{top:40%;right:3%;animation-delay:2s;}
+    .d3{bottom:15%;left:4%;animation-delay:4s;}
+    .d4{bottom:30%;right:2%;animation-delay:6s;}
+    @keyframes deco-float{0%,100%{transform:translateY(0) rotate(0deg)}50%{transform:translateY(-20px) rotate(10deg)}}
+
+    /* Responsive adjustments */
+    @media (max-width: 768px) {
+      .menu-grid{grid-template-columns:1fr;gap:20px;}
+      .header-bg{width:250px;height:160px;}
+      .menu-card{padding:28px 20px;}
+    }
+  </style>
+
+</head>
+<body>
+  <div class="top-border"></div>
+  <a href="index.html" class="back-btn">← Beranda</a>
+
+  <span class="deco d1">🏝️</span><span class="deco d2">🎭</span>
+  <span class="deco d3">🌺</span><span class="deco d4">🗺️</span>
+
+  <div class="header">
+    <div class="header-bg">
+      <img src="https://images.unsplash.com/photo-1580130778810-1d5951f7781e?w=400&h=300&fit=crop&crop=entropy&auto=format&fm=jpg&q=80" alt="Daerah Indonesia" loading="lazy">
+    </div>
+    <span class="header-icon">📖</span>
+    <h1>Bab 7: <em>Daerahku Kebanggaanku</em></h1>
+    <p>Pilih menu di bawah untuk mulai belajar</p>
+  </div>
+
+  <div class="progress-bar"><div class="progress-fill" id="pBar"></div></div>
+
+  <div class="menu-grid">
+
+    <!-- CP -->
+    <a href="cp_tp.html" class="menu-card card-cp" onclick="setProgress(50)">
+      <span class="card-emoji">🎯</span>
+      <div class="card-label">CP & TP</div>
+      <p class="card-desc">Capaian Pembelajaran yang harus dicapai siswa &<BR> Tujuan Pembelajaran yang ingin dicapai</p>
+      <span class="card-tag">Lihat CP & TP→</span>
+    </a>
+
+    
+
+    <!-- MATERI -->
+    <a href="materi.html" class="menu-card card-materi" onclick="setProgress(75)">
+      <span class="card-emoji">📚</span>
+      <div class="card-label">Materi</div>
+      <p class="card-desc">Isi pembelajaran lengkap<br/>tentang Daerahku Kebanggaanku<br><br><br></p>
+      <span class="card-tag">Belajar Materi →</span>
+    </a>
+
+     <!-- GAMBAR -->
+    <a href="gambar.html" class="menu-card card-gambar" onclick="setProgress(90)">
+      <span class="card-emoji">🖼️</span>
+      <div class="card-label">Gambar</div>
+      <p class="card-desc">Koleksi foto indah<br/>daerah-daerah di Indonesia<br><br><br></p>
+      <span class="card-tag">Lihat Gambar →</span>
+    </a>
+
+
+    <!-- EVALUASI -->
+    <a href="evaluasi.html" class="menu-card card-evaluasi" onclick="setProgress(100)">
+      <span class="card-emoji">📝</span>
+      <div class="card-label">Evaluasi</div>
+      <p class="card-desc">Tes pengetahuan dan<br/>latihan soal interaktif<br><br><br><br></p>
+      <span class="card-tag">Uji Kemampuan →</span>
+    </a>
+
+    
+  </div>
+
+  <div class="info-strip">
+    <span>🏫 Kelas 5 SD</span>
+    <span>|</span>
+    <span>Seperti Apakah Budaya Daerahku</span>
+    <span>|</span>
+    <span>📖 Bab 7</span>
+  </div>
+
+  <script>
+    function setProgress(v){
+      localStorage.setItem('progress', v);
+    }
+    // Load saved progress
+    const saved = localStorage.getItem('progress') || 25;
+    document.getElementById('pBar').style.width = saved + '%';
+  </script>
+</body>
+</html>

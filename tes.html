@@ -1,0 +1,794 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Evaluasi</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Baloo+2:wght@400;600;700;800&display=swap');
+
+  :root {
+    --primary: #6c63ff;
+    --secondary: #ff6584;
+    --accent: #43e97b;
+    --warn: #ffb347;
+    --bg: #f0f4ff;
+    --card: #ffffff;
+    --text: #2d2d4e;
+    --shadow: 0 8px 32px rgba(108,99,255,0.13);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Nunito', sans-serif;
+    background: var(--bg);
+    min-height: 100vh;
+    color: var(--text);
+    padding-bottom: 80px;
+  }
+
+  header {
+    background: linear-gradient(135deg, #ff6584 0%, #ff8e53 100%);
+    color: white;
+    padding: 18px 20px 14px;
+    text-align: center;
+    box-shadow: 0 4px 16px rgba(255,101,132,0.3);
+    position: sticky; top: 0; z-index: 100;
+  }
+
+  header h1 { font-family: 'Baloo 2', cursive; font-size: 1.6rem; font-weight: 800; }
+  header p { font-size: 0.82rem; opacity: 0.9; margin-top: 2px; }
+
+  .nav-back {
+    position: absolute; left: 16px; top: 50%; transform: translateY(-50%);
+    background: rgba(255,255,255,0.22); color: white;
+    border: none; border-radius: 10px; padding: 6px 14px;
+    font-family: 'Nunito', sans-serif; font-weight: 700; font-size: 0.9rem;
+    cursor: pointer; text-decoration: none;
+  }
+
+  main { padding: 20px 16px 20px; max-width: 680px; margin: 0 auto; }
+
+  /* Mode Selector */
+  #modeScreen { display: block; }
+  #quizScreen { display: none; }
+  #resultScreen { display: none; }
+
+  .mode-title {
+    font-family: 'Baloo 2', cursive;
+    font-size: 1.3rem; font-weight: 800;
+    color: var(--primary);
+    text-align: center;
+    margin-bottom: 6px;
+  }
+
+  .mode-subtitle {
+    text-align: center; color: #888; font-size: 0.88rem; margin-bottom: 24px;
+  }
+
+  .mode-cards { display: flex; flex-direction: column; gap: 14px; }
+
+  .mode-card {
+    background: white;
+    border-radius: 20px;
+    box-shadow: var(--shadow);
+    padding: 20px 22px;
+    cursor: pointer;
+    display: flex; align-items: center; gap: 18px;
+    border: 3px solid transparent;
+    transition: all 0.22s;
+  }
+
+  .mode-card:hover, .mode-card:active {
+    border-color: var(--primary);
+    transform: translateY(-3px);
+    box-shadow: 0 14px 36px rgba(108,99,255,0.18);
+  }
+
+  .mode-icon { font-size: 2.5rem; flex-shrink: 0; }
+
+  .mode-info .mode-name {
+    font-family: 'Baloo 2', cursive;
+    font-size: 1.1rem; font-weight: 800;
+    margin-bottom: 3px;
+  }
+
+  .mode-info .mode-desc { font-size: 0.82rem; color: #888; }
+
+  .mode-badge {
+    margin-left: auto;
+    background: linear-gradient(135deg, var(--primary), #a78bfa);
+    color: white; border-radius: 10px;
+    padding: 4px 12px; font-size: 0.75rem; font-weight: 800;
+    flex-shrink: 0;
+  }
+
+  /* Quiz Header */
+  .quiz-header {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 16px;
+  }
+
+  .quiz-mode-tag {
+    background: linear-gradient(135deg, var(--secondary), #ff8e53);
+    color: white; border-radius: 10px;
+    padding: 4px 14px; font-size: 0.8rem; font-weight: 800;
+  }
+
+  .quiz-score-box {
+    background: white; border-radius: 12px;
+    padding: 4px 14px; font-weight: 800; font-size: 0.9rem;
+    color: var(--primary); box-shadow: var(--shadow);
+  }
+
+  .progress-bar-wrap {
+    background: #e0d7ff; border-radius: 20px; height: 10px;
+    margin-bottom: 20px; overflow: hidden;
+  }
+
+  .progress-bar {
+    background: linear-gradient(135deg, var(--primary), #a78bfa);
+    height: 100%; border-radius: 20px;
+    transition: width 0.4s ease;
+  }
+
+  .question-num {
+    font-size: 0.8rem; color: #aaa; font-weight: 700;
+    margin-bottom: 6px;
+  }
+
+  .question-card {
+    background: white; border-radius: 20px;
+    box-shadow: var(--shadow); padding: 22px 20px;
+    margin-bottom: 18px;
+    animation: fadeIn 0.35s ease both;
+  }
+
+  .question-text {
+    font-family: 'Baloo 2', cursive;
+    font-size: 1.1rem; font-weight: 700;
+    line-height: 1.5; margin-bottom: 4px;
+  }
+
+  .question-emoji { font-size: 2rem; margin-bottom: 10px; display: block; }
+
+  /* ===== ABCD Options ===== */
+  .options-list { display: flex; flex-direction: column; gap: 10px; margin-top: 14px; }
+
+  .option-btn {
+    display: flex; align-items: center; gap: 12px;
+    background: #f5f3ff; border: 2px solid #e0d7ff;
+    border-radius: 14px; padding: 12px 16px;
+    cursor: pointer; font-family: 'Nunito', sans-serif;
+    font-weight: 700; font-size: 0.95rem; color: var(--text);
+    transition: all 0.2s; text-align: left;
+  }
+
+  .option-btn:hover:not(:disabled) {
+    background: #ede9fe; border-color: var(--primary);
+    transform: translateX(4px);
+  }
+
+  .option-letter {
+    width: 32px; height: 32px; border-radius: 10px;
+    background: var(--primary); color: white;
+    font-weight: 900; font-size: 0.9rem;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+
+  .option-btn.correct {
+    background: #d1fae5; border-color: #10b981; color: #065f46;
+  }
+  .option-btn.correct .option-letter { background: #10b981; }
+
+  .option-btn.wrong {
+    background: #ffe4e6; border-color: #f43f5e; color: #881337;
+  }
+  .option-btn.wrong .option-letter { background: #f43f5e; }
+
+  .option-btn.reveal-correct {
+    background: #d1fae5; border-color: #10b981;
+    animation: pulse 0.5s ease;
+  }
+
+  /* ===== MENCOCOKKAN ===== */
+  .match-container { margin-top: 14px; }
+  .match-instruction { font-size: 0.83rem; color: #888; margin-bottom: 14px; font-style: italic; }
+
+  .match-cols { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .match-col-title { font-size: 0.78rem; font-weight: 800; color: var(--primary); margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.5px; }
+
+  .match-item {
+    background: #f5f3ff; border: 2px solid #e0d7ff;
+    border-radius: 12px; padding: 10px 12px;
+    font-weight: 700; font-size: 0.88rem;
+    cursor: pointer; transition: all 0.18s;
+    min-height: 48px; display: flex; align-items: center;
+  }
+
+  .match-item:hover:not(.matched):not(.selected-left) {
+    background: #ede9fe; border-color: var(--primary);
+  }
+
+  .match-item.selected-left {
+    background: linear-gradient(135deg, var(--primary), #a78bfa);
+    color: white; border-color: var(--primary);
+    transform: scale(1.04);
+  }
+
+  .match-item.matched {
+    background: #d1fae5; border-color: #10b981; color: #065f46;
+    cursor: default;
+  }
+
+  .match-item.wrong-match {
+    background: #ffe4e6; border-color: #f43f5e;
+    animation: shake 0.4s ease;
+  }
+
+  .match-lines { display: flex; flex-direction: column; gap: 10px; }
+  .match-pair-row {
+    display: flex; gap: 10px; align-items: center;
+  }
+
+  /* ===== TRUE/FALSE (Benar/Salah) ===== */
+  .tf-options { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-top: 16px; }
+
+  .tf-btn {
+    padding: 22px 10px;
+    border-radius: 18px; border: 3px solid transparent;
+    font-family: 'Baloo 2', cursive; font-size: 1.4rem; font-weight: 800;
+    cursor: pointer; transition: all 0.2s;
+    display: flex; flex-direction: column; align-items: center; gap: 6px;
+  }
+
+  .tf-btn.benar {
+    background: #d1fae5; color: #065f46; border-color: #10b981;
+  }
+  .tf-btn.salah {
+    background: #ffe4e6; color: #881337; border-color: #f43f5e;
+  }
+  .tf-btn:hover:not(:disabled) { transform: scale(1.05); }
+  .tf-btn:disabled { opacity: 0.7; cursor: not-allowed; }
+  .tf-btn.selected-correct { box-shadow: 0 0 0 4px #10b981; }
+  .tf-btn.selected-wrong { box-shadow: 0 0 0 4px #f43f5e; opacity: 0.6; }
+
+  /* Feedback */
+  .feedback-box {
+    border-radius: 14px; padding: 12px 16px;
+    margin-top: 12px; font-weight: 700; font-size: 0.9rem;
+    display: none; animation: fadeIn 0.3s ease;
+  }
+  .feedback-box.show { display: block; }
+  .feedback-box.correct-fb { background: #d1fae5; color: #065f46; border-left: 4px solid #10b981; }
+  .feedback-box.wrong-fb { background: #ffe4e6; color: #881337; border-left: 4px solid #f43f5e; }
+
+  /* Next Btn */
+  .btn-next {
+    display: none; width: 100%; margin-top: 14px;
+    background: linear-gradient(135deg, var(--primary), #a78bfa);
+    color: white; font-family: 'Nunito', sans-serif; font-weight: 800;
+    font-size: 1rem; border: none; border-radius: 14px;
+    padding: 14px; cursor: pointer;
+    box-shadow: 0 4px 16px rgba(108,99,255,0.25);
+    transition: transform 0.18s;
+  }
+  .btn-next.show { display: block; }
+  .btn-next:hover { transform: translateY(-2px); }
+
+  .btn-back-mode {
+    background: #f5f3ff; color: var(--primary);
+    font-family: 'Nunito', sans-serif; font-weight: 800;
+    font-size: 0.88rem; border: 2px solid var(--primary);
+    border-radius: 12px; padding: 8px 18px; cursor: pointer;
+    margin-bottom: 18px; transition: all 0.18s;
+  }
+  .btn-back-mode:hover { background: var(--primary); color: white; }
+
+  /* Result Screen */
+  .result-card {
+    background: white; border-radius: 24px;
+    box-shadow: var(--shadow); padding: 32px 24px;
+    text-align: center; animation: popIn 0.5s cubic-bezier(.175,.885,.32,1.275);
+    margin-bottom: 20px;
+  }
+
+  .result-emoji { font-size: 5rem; margin-bottom: 16px; display: block; }
+  .result-title { font-family: 'Baloo 2', cursive; font-size: 1.6rem; font-weight: 800; margin-bottom: 8px; }
+  .result-subtitle { color: #888; font-size: 0.9rem; margin-bottom: 24px; }
+
+  .score-circle {
+    width: 120px; height: 120px;
+    border-radius: 50%;
+    background: conic-gradient(var(--primary) 0%, #a78bfa 100%);
+    display: flex; align-items: center; justify-content: center;
+    margin: 0 auto 24px; position: relative;
+    box-shadow: 0 8px 32px rgba(108,99,255,0.3);
+  }
+
+  .score-inner {
+    width: 96px; height: 96px;
+    background: white; border-radius: 50%;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+  }
+
+  .score-num { font-family: 'Baloo 2', cursive; font-size: 2rem; font-weight: 800; color: var(--primary); line-height: 1; }
+  .score-label { font-size: 0.7rem; font-weight: 700; color: #aaa; }
+
+  .stats-row {
+    display: flex; gap: 12px; justify-content: center; margin-bottom: 24px;
+  }
+
+  .stat-box {
+    background: #f5f3ff; border-radius: 14px; padding: 12px 18px;
+    min-width: 80px;
+  }
+  .stat-num { font-family: 'Baloo 2', cursive; font-size: 1.4rem; font-weight: 800; }
+  .stat-lbl { font-size: 0.72rem; color: #aaa; font-weight: 700; }
+  .stat-num.green { color: #10b981; }
+  .stat-num.red { color: #f43f5e; }
+
+  .btn-row { display: flex; gap: 12px; flex-wrap: wrap; }
+
+  .btn-primary {
+    flex: 1; min-width: 120px;
+    background: linear-gradient(135deg, var(--primary), #a78bfa);
+    color: white; font-family: 'Nunito', sans-serif; font-weight: 800;
+    font-size: 1rem; border: none; border-radius: 14px;
+    padding: 14px 10px; cursor: pointer;
+    box-shadow: 0 4px 16px rgba(108,99,255,0.25);
+    transition: transform 0.18s; text-decoration: none; display: inline-block; text-align: center;
+  }
+  .btn-primary:hover { transform: translateY(-2px); }
+
+  .btn-outline {
+    flex: 1; min-width: 120px;
+    background: white; color: var(--primary);
+    font-family: 'Nunito', sans-serif; font-weight: 800;
+    font-size: 1rem; border: 2px solid var(--primary);
+    border-radius: 14px; padding: 14px 10px; cursor: pointer;
+    transition: all 0.18s;
+  }
+  .btn-outline:hover { background: var(--primary); color: white; }
+
+  /* Bottom Nav */
+  .bottom-nav {
+    position: fixed; bottom: 0; left: 0; right: 0;
+    background: white; box-shadow: 0 -4px 20px rgba(0,0,0,0.09);
+    display: flex; justify-content: space-around;
+    padding: 10px 0 6px; z-index: 200;
+  }
+
+  .nav-item {
+    display: flex; flex-direction: column; align-items: center; gap: 2px;
+    font-size: 0.68rem; font-weight: 700; color: #bbb; text-decoration: none;
+  }
+  .nav-item.active { color: var(--secondary); }
+  .nav-item .nav-icon { font-size: 1.4rem; }
+
+  @keyframes fadeIn { from { opacity:0; transform:translateY(14px); } to { opacity:1; transform:none; } }
+  @keyframes popIn { from { opacity:0; transform:scale(0.85); } to { opacity:1; transform:scale(1); } }
+  @keyframes shake {
+    0%,100%{transform:translateX(0)}25%{transform:translateX(-6px)}75%{transform:translateX(6px)}
+  }
+  @keyframes pulse {
+    0%{box-shadow:0 0 0 0 rgba(16,185,129,0.4)}70%{box-shadow:0 0 0 12px rgba(16,185,129,0)}100%{box-shadow:none}
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <a class="nav-back" href="menu.html">← Menu</a>
+  <h1>📝 Evaluasi</h1>
+  <p>Pilih mode kuis untuk memulai</p>
+</header>
+
+<main>
+
+<!-- ========== MODE SELECTION SCREEN ========== -->
+<div id="modeScreen">
+  <div class="mode-title">🎯 Pilih Mode Kuis</div>
+  <div class="mode-subtitle">3 mode tersedia — pilih yang kamu suka!</div>
+
+  <div class="mode-cards">
+    <div class="mode-card" onclick="startQuiz('abcd')">
+      <div class="mode-icon">🔤</div>
+      <div class="mode-info">
+        <div class="mode-name">Pilihan Ganda (ABCD)</div>
+        <div class="mode-desc">Pilih satu jawaban benar dari 4 pilihan A, B, C, D</div>
+      </div>
+      <div class="mode-badge">10 Soal</div>
+    </div>
+
+    <div class="mode-card" onclick="startQuiz('match')">
+      <div class="mode-icon">🔗</div>
+      <div class="mode-info">
+        <div class="mode-name">Mencocokkan</div>
+        <div class="mode-desc">Cocokkan kolom kiri dengan kolom kanan yang tepat</div>
+      </div>
+      <div class="mode-badge">8 Pasang</div>
+    </div>
+
+    <div class="mode-card" onclick="startQuiz('tf')">
+      <div class="mode-icon">✅</div>
+      <div class="mode-info">
+        <div class="mode-name">Benar / Salah</div>
+        <div class="mode-desc">Tentukan apakah pernyataan berikut benar atau salah</div>
+      </div>
+      <div class="mode-badge">10 Soal</div>
+    </div>
+  </div>
+</div>
+
+<!-- ========== QUIZ SCREEN ========== -->
+<div id="quizScreen">
+  <button class="btn-back-mode" onclick="backToMode()">← Ganti Mode</button>
+
+  <div class="quiz-header">
+    <span class="quiz-mode-tag" id="modeTag">ABCD</span>
+    <span class="quiz-score-box">Skor: <span id="scoreDisplay">0</span></span>
+  </div>
+
+  <div class="progress-bar-wrap">
+    <div class="progress-bar" id="progressBar" style="width:0%"></div>
+  </div>
+
+  <div class="question-num" id="questionNum">Soal 1 dari 10</div>
+
+  <div class="question-card" id="questionCard">
+    <!-- dynamic content -->
+  </div>
+
+  <div class="feedback-box" id="feedbackBox"></div>
+  <button class="btn-next" id="btnNext" onclick="nextQuestion()">Soal Berikutnya →</button>
+</div>
+
+<!-- ========== RESULT SCREEN ========== -->
+<div id="resultScreen">
+  <div class="result-card">
+    <span class="result-emoji" id="resultEmoji">🎉</span>
+    <div class="result-title" id="resultTitle">Luar Biasa!</div>
+    <div class="result-subtitle" id="resultSubtitle">Kamu berhasil menyelesaikan kuis!</div>
+
+    <div class="score-circle">
+      <div class="score-inner">
+        <div class="score-num" id="finalScore">0</div>
+        <div class="score-label">SKOR</div>
+      </div>
+    </div>
+
+    <div class="stats-row">
+      <div class="stat-box">
+        <div class="stat-num green" id="statBenar">0</div>
+        <div class="stat-lbl">✅ Benar</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-num red" id="statSalah">0</div>
+        <div class="stat-lbl">❌ Salah</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-num" id="statTotal">0</div>
+        <div class="stat-lbl">📋 Total</div>
+      </div>
+    </div>
+
+    <div class="btn-row">
+      <button class="btn-outline" onclick="backToMode()">🔄 Coba Lagi</button>
+      <a class="btn-primary" href="materi.html">📚 Belajar Lagi</a>
+    </div>
+  </div>
+</div>
+
+</main>
+
+<!-- Bottom Nav -->
+<div class="bottom-nav">
+  <a class="nav-item" href="index.html"><span class="nav-icon">🏠</span>Beranda</a>
+  <a class="nav-item" href="menu.html"><span class="nav-icon">📋</span>Menu</a>
+  <a class="nav-item" href="gambar.html"><span class="nav-icon">🖼️</span>Gambar</a>
+  <a class="nav-item active" href="evaluasi.html"><span class="nav-icon">📝</span>Evaluasi</a>
+  <a class="nav-item" href="materi.html"><span class="nav-icon">📚</span>Materi</a>
+</div>
+
+<script>
+// ===================== DATA =====================
+
+const abcdQuestions = [
+  { emoji:'🌋', q:'Apa yang keluar dari kawah gunung berapi?', opts:['Air tawar','Lava dan abu vulkanik','Salju','Pasir pantai'], ans:1, explain:'Gunung berapi mengeluarkan lava (magma), abu vulkanik, dan gas dari dalam bumi.' },
+  { emoji:'🦋', q:'Proses perubahan bentuk kupu-kupu dari telur hingga dewasa disebut?', opts:['Reproduksi','Fotosintesis','Metamorfosis','Evolusi'], ans:2, explain:'Kupu-kupu mengalami metamorfosis sempurna: telur → ulat → kepompong → imago (kupu-kupu dewasa).' },
+  { emoji:'🌊', q:'Apa yang menyebabkan terbentuknya ombak di laut?', opts:['Gravitasi bulan','Tiupan angin','Gerakan ikan','Arus listrik'], ans:1, explain:'Ombak terbentuk karena energi angin yang berhembus di permukaan air laut dipindahkan ke air.' },
+  { emoji:'🔭', q:'Planet ketiga dari Matahari dalam tata surya kita adalah?', opts:['Mars','Venus','Bumi','Jupiter'], ans:2, explain:'Urutan planet: Merkurius, Venus, Bumi, Mars, Jupiter, Saturnus, Uranus, Neptunus.' },
+  { emoji:'🐬', q:'Cara lumba-lumba berkomunikasi dan mendeteksi lingkungan disebut?', opts:['Telekinesis','Ekolokasi','Sonar pasif','Radar'], ans:1, explain:'Lumba-lumba menggunakan ekolokasi — memancarkan gelombang suara dan menangkap pantulannya.' },
+  { emoji:'🎭', q:'Wayang kulit Indonesia diakui UNESCO sebagai warisan budaya pada tahun?', opts:['1999','2003','2009','2015'], ans:1, explain:'UNESCO mengakui Wayang Kulit sebagai Warisan Budaya Takbenda pada tahun 2003.' },
+  { emoji:'⚗️', q:'Manakah yang BUKAN tanda terjadinya reaksi kimia?', opts:['Perubahan warna','Terbentuk gelembung','Perubahan bentuk fisik','Perubahan suhu'], ans:2, explain:'Perubahan bentuk fisik (seperti dipotong/dihancurkan) adalah perubahan fisik, bukan kimia.' },
+  { emoji:'🏺', q:'Batik Indonesia diakui UNESCO sebagai warisan budaya pada tahun?', opts:['2003','2006','2009','2012'], ans:2, explain:'Batik Indonesia resmi diakui UNESCO sebagai Warisan Budaya Takbenda pada 2 Oktober 2009.' },
+  { emoji:'🌿', q:'Proses tumbuhan membuat makanan sendiri menggunakan sinar matahari disebut?', opts:['Respirasi','Transpirasi','Fotosintesis','Fermentasi'], ans:2, explain:'Fotosintesis adalah proses tumbuhan mengubah air dan CO₂ menjadi glukosa menggunakan energi cahaya.' },
+  { emoji:'🧲', q:'Kutub magnet yang senama akan saling?', opts:['Menarik','Menolak','Diam saja','Melebur'], ans:1, explain:'Hukum magnet: kutub senama (U-U atau S-S) tolak-menolak, kutub berlawanan tarik-menarik.' },
+];
+
+const matchQuestions = [
+  { left:'🌋 Gunung Berapi', right:'Lava & Abu Vulkanik' },
+  { left:'🦋 Metamorfosis', right:'Telur → Ulat → Kepompong' },
+  { left:'🐬 Ekolokasi', right:'Gelombang Suara Lumba-lumba' },
+  { left:'🔭 Planet ke-3', right:'Bumi' },
+  { left:'🎭 Wayang Kulit', right:'Warisan UNESCO 2003' },
+  { left:'🌿 Fotosintesis', right:'Energi Cahaya Matahari' },
+  { left:'🏺 Batik', right:'Warisan UNESCO 2009' },
+  { left:'🧲 Kutub Senama', right:'Tolak-Menolak' },
+];
+
+const tfQuestions = [
+  { emoji:'🌋', q:'Gunung berapi mengeluarkan lava yang merupakan magma yang telah sampai ke permukaan bumi.', ans:true, explain:'Benar! Lava adalah magma yang keluar dari perut bumi melalui kawah gunung berapi.' },
+  { emoji:'🦋', q:'Kupu-kupu mengalami metamorfosis tidak sempurna seperti belalang.', ans:false, explain:'Salah! Kupu-kupu mengalami metamorfosis SEMPURNA (4 tahap), bukan tidak sempurna.' },
+  { emoji:'🌊', q:'Ombak laut terbentuk karena tiupan angin yang memindahkan energi ke permukaan air.', ans:true, explain:'Benar! Energi angin berpindah ke air laut sehingga menciptakan gelombang/ombak.' },
+  { emoji:'🐬', q:'Lumba-lumba termasuk hewan golongan ikan karena hidup di air.', ans:false, explain:'Salah! Lumba-lumba adalah MAMALIA laut. Mereka bernapas dengan paru-paru dan menyusui anak.' },
+  { emoji:'🔭', q:'Merkurius adalah planet terdekat dengan Matahari dalam tata surya kita.', ans:true, explain:'Benar! Merkurius adalah planet pertama (terdekat) dari Matahari.' },
+  { emoji:'🎭', q:'Wayang kulit adalah warisan budaya yang berasal dari India.', ans:false, explain:'Salah! Wayang kulit adalah budaya asli Indonesia yang diakui UNESCO tahun 2003.' },
+  { emoji:'⚗️', q:'Perubahan warna pada suatu zat dapat menjadi tanda terjadinya reaksi kimia.', ans:true, explain:'Benar! Perubahan warna adalah salah satu tanda reaksi kimia bersama gelembung, endapan, dan perubahan suhu.' },
+  { emoji:'🌿', q:'Proses fotosintesis tumbuhan menghasilkan oksigen yang kita hirup.', ans:true, explain:'Benar! Tumbuhan menghasilkan O₂ sebagai produk sampingan fotosintesis yang vital bagi kehidupan.' },
+  { emoji:'🧲', q:'Kutub magnet yang berlawanan (U dan S) akan saling menolak.', ans:false, explain:'Salah! Kutub berlawanan (U-S) TARIK-MENARIK. Yang menolak adalah kutub SENAMA (U-U atau S-S).' },
+  { emoji:'🏺', q:'Batik Indonesia diakui UNESCO pada tahun 2009 sebagai warisan budaya takbenda.', ans:true, explain:'Benar! Batik Indonesia diakui UNESCO pada 2 Oktober 2009, dan tanggal itu dijadikan Hari Batik Nasional.' },
+];
+
+// ===================== STATE =====================
+let currentMode = '';
+let currentQ = 0;
+let score = 0;
+let correct = 0;
+let wrong = 0;
+let answered = false;
+
+// Match state
+let matchLeft = null;
+let matchedPairs = 0;
+let shuffledRight = [];
+let matchScore = 0;
+
+// ===================== FUNCTIONS =====================
+
+function backToMode() {
+  document.getElementById('modeScreen').style.display = 'block';
+  document.getElementById('quizScreen').style.display = 'none';
+  document.getElementById('resultScreen').style.display = 'none';
+}
+
+function startQuiz(mode) {
+  currentMode = mode;
+  currentQ = 0; score = 0; correct = 0; wrong = 0; answered = false;
+  matchLeft = null; matchedPairs = 0; matchScore = 0;
+
+  document.getElementById('modeScreen').style.display = 'none';
+  document.getElementById('quizScreen').style.display = 'block';
+  document.getElementById('resultScreen').style.display = 'none';
+  document.getElementById('scoreDisplay').textContent = '0';
+
+  const tags = { abcd:'📝 ABCD', match:'🔗 MENCOCOKKAN', tf:'✅ BENAR/SALAH' };
+  document.getElementById('modeTag').textContent = tags[mode];
+
+  if (mode === 'match') {
+    shuffledRight = [...matchQuestions].map(q => q.right).sort(() => Math.random() - 0.5);
+    renderMatch();
+  } else {
+    renderQuestion();
+  }
+}
+
+// ===== ABCD =====
+function renderQuestion() {
+  const qs = currentMode === 'abcd' ? abcdQuestions : tfQuestions;
+  const total = qs.length;
+  const q = qs[currentQ];
+  answered = false;
+
+  document.getElementById('progressBar').style.width = ((currentQ / total) * 100) + '%';
+  document.getElementById('questionNum').textContent = `Soal ${currentQ + 1} dari ${total}`;
+  document.getElementById('feedbackBox').className = 'feedback-box';
+  document.getElementById('btnNext').className = 'btn-next';
+
+  if (currentMode === 'abcd') {
+    const letters = ['A','B','C','D'];
+    document.getElementById('questionCard').innerHTML = `
+      <span class="question-emoji">${q.emoji}</span>
+      <div class="question-text">${q.q}</div>
+      <div class="options-list">
+        ${q.opts.map((o, i) => `
+          <button class="option-btn" onclick="answerABCD(${i})" id="opt${i}">
+            <span class="option-letter">${letters[i]}</span>${o}
+          </button>
+        `).join('')}
+      </div>
+    `;
+  } else {
+    renderTF(q);
+  }
+}
+
+function answerABCD(idx) {
+  if (answered) return;
+  answered = true;
+  const q = abcdQuestions[currentQ];
+  const btns = document.querySelectorAll('.option-btn');
+
+  btns.forEach(b => b.disabled = true);
+
+  if (idx === q.ans) {
+    btns[idx].className = 'option-btn correct';
+    score += 10; correct++;
+    showFeedback(true, '✅ Jawaban Benar! ' + q.explain);
+  } else {
+    btns[idx].className = 'option-btn wrong';
+    btns[q.ans].className = 'option-btn reveal-correct';
+    wrong++;
+    showFeedback(false, '❌ Kurang tepat. ' + q.explain);
+  }
+
+  document.getElementById('scoreDisplay').textContent = score;
+  document.getElementById('btnNext').className = 'btn-next show';
+}
+
+// ===== TRUE/FALSE =====
+function renderTF(q) {
+  document.getElementById('questionCard').innerHTML = `
+    <span class="question-emoji">${q.emoji}</span>
+    <div class="question-text">${q.q}</div>
+    <div class="tf-options">
+      <button class="tf-btn benar" onclick="answerTF(true, this)" id="tfBenar">
+        ✅<span style="font-size:1rem;font-family:'Nunito',sans-serif;">BENAR</span>
+      </button>
+      <button class="tf-btn salah" onclick="answerTF(false, this)" id="tfSalah">
+        ❌<span style="font-size:1rem;font-family:'Nunito',sans-serif;">SALAH</span>
+      </button>
+    </div>
+  `;
+}
+
+function answerTF(ans, btn) {
+  if (answered) return;
+  answered = true;
+  const q = tfQuestions[currentQ];
+
+  document.getElementById('tfBenar').disabled = true;
+  document.getElementById('tfSalah').disabled = true;
+
+  if (ans === q.ans) {
+    btn.classList.add('selected-correct');
+    score += 10; correct++;
+    showFeedback(true, '✅ Jawaban Benar! ' + q.explain);
+  } else {
+    btn.classList.add('selected-wrong');
+    wrong++;
+    showFeedback(false, '❌ Kurang tepat. ' + q.explain);
+    // Reveal correct
+    if (q.ans === true) document.getElementById('tfBenar').classList.add('selected-correct');
+    else document.getElementById('tfSalah').classList.add('selected-correct');
+  }
+
+  document.getElementById('scoreDisplay').textContent = score;
+  document.getElementById('btnNext').className = 'btn-next show';
+}
+
+function showFeedback(isCorrect, text) {
+  const fb = document.getElementById('feedbackBox');
+  fb.textContent = text;
+  fb.className = 'feedback-box show ' + (isCorrect ? 'correct-fb' : 'wrong-fb');
+}
+
+function nextQuestion() {
+  const qs = currentMode === 'abcd' ? abcdQuestions : tfQuestions;
+  currentQ++;
+  if (currentQ >= qs.length) {
+    showResult(qs.length);
+  } else {
+    renderQuestion();
+  }
+}
+
+// ===== MATCH =====
+function renderMatch() {
+  const total = matchQuestions.length;
+  document.getElementById('progressBar').style.width = '0%';
+  document.getElementById('questionNum').textContent = `Mencocokkan 0 dari ${total} pasang`;
+  document.getElementById('btnNext').className = 'btn-next';
+  document.getElementById('feedbackBox').className = 'feedback-box';
+
+  document.getElementById('questionCard').innerHTML = `
+    <div class="question-text" style="margin-bottom:10px;">🔗 Cocokkan kolom kiri dengan kanan!</div>
+    <div class="match-instruction">Klik item di kolom kiri, lalu klik pasangannya di kanan</div>
+    <div class="match-cols">
+      <div>
+        <div class="match-col-title">Kolom A</div>
+        ${matchQuestions.map((q,i) => `
+          <div class="match-item" id="left${i}" onclick="selectLeft(${i})" style="margin-bottom:8px;">${q.left}</div>
+        `).join('')}
+      </div>
+      <div>
+        <div class="match-col-title">Kolom B</div>
+        ${shuffledRight.map((r,i) => `
+          <div class="match-item" id="right${i}" onclick="selectRight(${i})" style="margin-bottom:8px;">${r}</div>
+        `).join('')}
+      </div>
+    </div>
+  `;
+}
+
+function selectLeft(idx) {
+  const el = document.getElementById(`left${idx}`);
+  if (el.classList.contains('matched')) return;
+
+  // Deselect previous
+  if (matchLeft !== null) {
+    document.getElementById(`left${matchLeft}`).classList.remove('selected-left');
+  }
+  matchLeft = idx;
+  el.classList.add('selected-left');
+}
+
+function selectRight(idx) {
+  if (matchLeft === null) {
+    showFeedback(false, '⬅️ Pilih dulu item di Kolom A!');
+    document.getElementById('feedbackBox').className = 'feedback-box show wrong-fb';
+    return;
+  }
+
+  const rightEl = document.getElementById(`right${idx}`);
+  if (rightEl.classList.contains('matched')) return;
+
+  const leftEl = document.getElementById(`left${matchLeft}`);
+  const correctRight = matchQuestions[matchLeft].right;
+  const selectedRight = shuffledRight[idx];
+
+  if (selectedRight === correctRight) {
+    // Correct match
+    leftEl.classList.remove('selected-left');
+    leftEl.classList.add('matched');
+    rightEl.classList.add('matched');
+    matchedPairs++;
+    matchScore += 10;
+    correct++;
+    score = matchScore;
+    document.getElementById('scoreDisplay').textContent = score;
+    document.getElementById('progressBar').style.width = ((matchedPairs / matchQuestions.length) * 100) + '%';
+    document.getElementById('questionNum').textContent = `Mencocokkan ${matchedPairs} dari ${matchQuestions.length} pasang`;
+    showFeedback(true, `✅ Tepat! "${selectedRight}" adalah pasangan yang benar.`);
+
+    if (matchedPairs === matchQuestions.length) {
+      setTimeout(() => showResult(matchQuestions.length), 600);
+    }
+  } else {
+    // Wrong match
+    leftEl.classList.remove('selected-left');
+    rightEl.classList.add('wrong-match');
+    wrong++;
+    showFeedback(false, `❌ Bukan pasangan yang tepat. Coba lagi!`);
+    setTimeout(() => rightEl.classList.remove('wrong-match'), 500);
+  }
+
+  matchLeft = null;
+}
+
+function showResult(total) {
+  document.getElementById('quizScreen').style.display = 'none';
+  document.getElementById('resultScreen').style.display = 'block';
+
+  const pct = Math.round((score / (total * 10)) * 100);
+  let emoji, title, subtitle;
+
+  if (pct >= 90) { emoji='🏆'; title='Luar Biasa!'; subtitle='Kamu benar-benar menguasai materi ini!'; }
+  else if (pct >= 70) { emoji='⭐'; title='Bagus Sekali!'; subtitle='Hampir sempurna! Terus berlatih ya!'; }
+  else if (pct >= 50) { emoji='👍'; title='Cukup Baik!'; subtitle='Ulangi materi dan coba lagi untuk nilai lebih tinggi!'; }
+  else { emoji='💪'; title='Terus Semangat!'; subtitle='Jangan menyerah! Baca materinya dulu ya!'; }
+
+  document.getElementById('resultEmoji').textContent = emoji;
+  document.getElementById('resultTitle').textContent = title;
+  document.getElementById('resultSubtitle').textContent = subtitle;
+  document.getElementById('finalScore').textContent = pct + '%';
+  document.getElementById('statBenar').textContent = correct;
+  document.getElementById('statSalah').textContent = wrong;
+  document.getElementById('statTotal').textContent = total;
+}
+</script>
+</body>
+</html>
